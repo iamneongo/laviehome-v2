@@ -56,7 +56,7 @@ function resolveCheckout(params: CheckoutSearchParams) {
     date: decoded.date ?? firstValue(params.date) ?? "N/A",
     timeRange: decoded.time_range ?? firstValue(params.time_range) ?? "N/A",
     price: Number.isFinite(price) ? price : 0,
-    hotline: branch?.hotline ?? "0845.828.676",
+    hotline: branch?.hotline ?? "0909.123.456",
     map: branch?.google_maps_link ?? "/contacts",
   };
 }

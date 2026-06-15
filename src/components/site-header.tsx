@@ -146,7 +146,7 @@ export function SiteHeader() {
                   Hủy đơn & Hoàn tiền
                 </h3>
                 <ul className="list-disc pl-8 space-y-1.5 text-white/70">
-                  <li>Quý khách vui lòng gọi Hotline <a href="tel:0845828676" className="text-yellow-200 font-bold hover:underline">0845.828.676</a> để yêu cầu hủy.</li>
+                  <li>Quý khách vui lòng gọi Hotline <a href="tel:0909123456" className="text-yellow-200 font-bold hover:underline">0909.123.456</a> để yêu cầu hủy.</li>
                   <li>Hoặc liên hệ tài khoản Zalo hỗ trợ.</li>
                 </ul>
               </div>

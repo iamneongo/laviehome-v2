@@ -503,10 +503,10 @@ export function LavieHomeApp() {
         <a className="float-button bg-slate-700" href="#top" aria-label="Lên đầu trang">
           <ChevronUp size={22} />
         </a>
-        <a className="float-button bg-emerald-500" href={`tel:${compactPhone(currentBranch?.hotline ?? "0845828676")}`} aria-label="Gọi ngay">
+        <a className="float-button bg-emerald-500" href={`tel:${compactPhone(currentBranch?.hotline ?? "0909123456")}`} aria-label="Gọi ngay">
           <Phone size={22} />
         </a>
-        <a className="float-button bg-blue-600" href={`https://zalo.me/${compactPhone(currentBranch?.hotline ?? "0845828676")}`} aria-label="Zalo">
+        <a className="float-button bg-blue-600" href={`https://zalo.me/${compactPhone(currentBranch?.hotline ?? "0909123456")}`} aria-label="Zalo">
           <MessageCircle size={20} />
         </a>
       </div>
@@ -518,7 +518,7 @@ export function LavieHomeApp() {
         <Link className="bottom-link" href="/checking">
           <Search size={18} /> Tra cứu
         </Link>
-        <a className="bottom-link" href={`tel:${compactPhone(currentBranch?.hotline ?? "0845828676")}`}>
+        <a className="bottom-link" href={`tel:${compactPhone(currentBranch?.hotline ?? "0909123456")}`}>
           <Phone size={18} /> Gọi ngay
         </a>
         <Link className="bottom-link" href="/contacts">
