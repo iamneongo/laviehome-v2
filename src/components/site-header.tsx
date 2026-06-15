@@ -51,8 +51,8 @@ export function SiteHeader() {
             <Link className="nav-link" href="/contacts">
               Chi Nhánh
             </Link>
-            <Link className="primary-button ml-2 min-h-11 px-5 py-2.5 text-sm" href="/#booking">
-              Đặt Phòng Ngay
+            <Link className="primary-button ml-2 min-h-11 px-5 py-2.5 text-sm" href="/#booking" style={{ textTransform: "none" }}>
+              Đặt phòng ngay
             </Link>
           </nav>
 
@@ -95,8 +95,8 @@ export function SiteHeader() {
               <Link className="mobile-drawer-link" href="/contacts" onClick={() => setMobileOpen(false)}>
                 Hệ Thống Chi Nhánh
               </Link>
-              <Link className="mobile-drawer-link is-primary justify-center" href="/#booking" onClick={() => setMobileOpen(false)}>
-                Đặt Phòng Ngay
+              <Link className="mobile-drawer-link is-primary justify-center" href="/#booking" onClick={() => setMobileOpen(false)} style={{ textTransform: "none" }}>
+                Đặt phòng ngay
               </Link>
             </nav>
 
@@ -136,7 +136,7 @@ export function SiteHeader() {
                   <li>Tìm kiếm phòng phù hợp với yêu cầu của quý khách.</li>
                   <li>Chọn khung giờ và nhấn "Xác nhận đặt phòng".</li>
                   <li>Nhập thông tin người đặt và hoàn tất thanh toán.</li>
-                  <li>Chờ xác nhận tự động hoặc từ lễ tân Tê Tê Home qua Zalo.</li>
+                  <li>Chờ xác nhận tự động hoặc từ lễ tân Lavie Home qua Zalo.</li>
                 </ul>
               </div>
 
@@ -157,7 +157,7 @@ export function SiteHeader() {
                   Hỗ trợ phát sinh
                 </h3>
                 <ul className="list-disc pl-8 space-y-1.5 text-white/70">
-                  <li>Tê Tê Home sẵn sàng hỗ trợ 24/7 mọi vấn đề liên quan dịch vụ.</li>
+                  <li>Lavie Home sẵn sàng hỗ trợ 24/7 mọi vấn đề liên quan dịch vụ.</li>
                   <li>Vui lòng tuân thủ quy định an ninh tại chi nhánh.</li>
                 </ul>
               </div>

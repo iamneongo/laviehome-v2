@@ -13,19 +13,15 @@ export default function CheckingPage() {
 
   useGSAP(() => {
     const tl = gsap.timeline();
-    tl.from(".page-panel", {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      ease: "power3.out",
-    })
-    .from(".animate-item", {
-      opacity: 0,
-      y: 20,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: "power3.out",
-    }, "-=0.4");
+    tl.fromTo(".page-panel", 
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+    )
+    .fromTo(".animate-item", 
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }, 
+      "-=0.4"
+    );
   }, { scope: containerRef });
 
   return (

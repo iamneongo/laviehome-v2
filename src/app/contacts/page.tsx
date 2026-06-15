@@ -4,10 +4,7 @@ import { useState, useRef } from "react";
 import { MapPin, Phone, MessageCircle, ArrowRight, BedDouble } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { activeBranches, compactPhone, roomsByBranch } from "@/lib/tete-data";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP);
 
 export default function ContactsPage() {
   const [selectedBranchId, setSelectedBranchId] = useState(activeBranches[0]?.id ?? 30);
@@ -15,32 +12,7 @@ export default function ContactsPage() {
   const branchRooms = roomsByBranch(selectedBranchId);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Initial page entrance animation
-  useGSAP(() => {
-    const tl = gsap.timeline();
-    tl.from(".contacts-header-animate", {
-      opacity: 0,
-      y: 30,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: "power3.out",
-    })
-    .from(".branch-card-animate", {
-      opacity: 0,
-      y: 15,
-      duration: 0.5,
-      stagger: 0.08,
-      ease: "power3.out",
-    }, "-=0.3");
-  }, { scope: containerRef });
 
-  // Animation triggered when selected branch changes
-  useGSAP(() => {
-    gsap.fromTo(".details-card-animate", 
-      { opacity: 0, scale: 0.98, y: 15 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power3.out" }
-    );
-  }, { dependencies: [selectedBranchId], scope: containerRef });
 
   return (
     <main className="site-shell min-h-dvh text-white" ref={containerRef}>
@@ -96,7 +68,7 @@ export default function ContactsPage() {
                   Chi nhánh hoạt động
                 </span>
                 <h2 className="mt-4 text-2xl font-extrabold text-white md:text-3xl leading-tight">
-                  Tê Tê Home - {selectedBranch.name.split(" - ").slice(1).join(" - ")}
+                  Lavie Home - {selectedBranch.name.split(" - ").slice(1).join(" - ")}
                 </h2>
 
                 <div className="mt-8 space-y-6 text-sm">

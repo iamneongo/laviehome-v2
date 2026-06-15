@@ -57,18 +57,17 @@ function amenityIcon(label: string) {
 }
 
 function makeDates() {
-  const formatter = new Intl.DateTimeFormat("vi-VN", {
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-  });
+  const weekdays = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 
   return Array.from({ length: 5 }, (_, index) => {
     const date = new Date();
     date.setDate(date.getDate() + index);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const weekday = weekdays[date.getDay()];
     return {
       iso: date.toISOString().slice(0, 10),
-      label: index === 0 ? "Hôm nay" : formatter.format(date),
+      label: index === 0 ? "Hôm nay" : `${weekday}, ${day}/${month}`,
     };
   });
 }
@@ -242,7 +241,7 @@ export function LavieHomeApp() {
                 Xem phòng thực tế, chọn giờ nghỉ linh hoạt và nhận thông tin phòng tự động qua điện thoại.
               </p>
               <div className="lavie-hero-actions">
-                <a className="primary-button px-6" href="#booking">
+                <a className="primary-button px-6" href="#booking" style={{ textTransform: "none" }}>
                   Đặt phòng ngay
                 </a>
                 <a className="lavie-hero-secondary" href="#rooms">
