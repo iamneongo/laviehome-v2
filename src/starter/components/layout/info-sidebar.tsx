@@ -14,19 +14,25 @@ import {
   useInfobar
 } from '@/starter/components/ui/infobar';
 
-// Default/fallback data when no content is set
 const defaultData = {
-  title: 'Documentation',
+  title: 'Lavie Home',
   sections: [
     {
-      title: 'Getting Started',
-      description: 'Learn how to get started with this application.',
+      title: 'Tổng quan vận hành',
+      description:
+        'Khu thông tin này tóm tắt các điểm cần chú ý khi quản lý homestay: booking, phòng, chi nhánh, nội dung hình ảnh và trạng thái hoạt động.',
       links: [
         {
-          title: 'Installation Guide',
-          url: '#'
+          title: 'Lavie Home',
+          url: '/'
         }
       ]
+    },
+    {
+      title: 'Trọng tâm hôm nay',
+      description:
+        'Kiểm tra phòng đang bán, ảnh thực tế, giá khởi điểm và các chi nhánh đang mở để giữ nội dung trên site đồng nhất với dashboard.',
+      links: []
     }
   ]
 };
@@ -63,7 +69,7 @@ export function InfoSidebar({ ...props }: React.ComponentProps<typeof Infobar>) 
                     {section.links && section.links.length > 0 && (
                       <div className='flex flex-col gap-2'>
                         <h4 className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
-                          Learn more
+                          Tham khảo
                         </h4>
                         <ul className='flex flex-col gap-1.5'>
                           {section.links.map((link) => (
@@ -86,7 +92,7 @@ export function InfoSidebar({ ...props }: React.ComponentProps<typeof Infobar>) 
                 ))
               ) : (
                 <div className='text-muted-foreground px-2 py-4 text-center text-sm'>
-                  No content available
+                  Chưa có nội dung bổ sung
                 </div>
               )}
             </div>

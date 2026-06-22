@@ -1,58 +1,128 @@
-﻿'use client';
-
 import PageContainer from '@/starter/components/layout/page-container';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/starter/components/ui/card';
-import { useOrganization } from '@clerk/nextjs';
-import { PricingTable } from '@clerk/nextjs';
+import { Badge } from '@/starter/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/starter/components/ui/card';
 import { Alert, AlertDescription } from '@/starter/components/ui/alert';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/starter/components/ui/table';
 import { Icons } from '@/starter/components/icons';
-import { billingInfoContent } from '@/starter/config/infoconfig';
+import { getPriceBands, getRevenueSummary } from '@/lib/homestay-dashboard';
+import { money } from '@/lib/tete-data';
+
+export const metadata = {
+  title: 'Dashboard: Doanh thu'
+};
 
 export default function BillingPage() {
-  const { organization, isLoaded } = useOrganization();
+  const revenue = getRevenueSummary(12);
+  const bands = getPriceBands();
 
   return (
     <PageContainer
-      isLoading={!isLoaded}
-      access={!!organization}
-      accessFallback={
-        <div className='flex min-h-[400px] items-center justify-center'>
-          <div className='space-y-2 text-center'>
-            <h2 className='text-2xl font-semibold'>No Organization Selected</h2>
-            <p className='text-muted-foreground'>
-              Please select or create an organization to view billing information.
-            </p>
-          </div>
-        </div>
+      pageTitle='Doanh thu homestay'
+      pageDescription='Theo dõi doanh thu mẫu, giá trung bình và cơ cấu phòng theo dải giá.'
+      pageHeaderAction={
+        <Badge variant='outline'>
+          <Icons.creditCard />
+          Mẫu doanh thu
+        </Badge>
       }
-      infoContent={billingInfoContent}
-      pageTitle='Billing & Plans'
-      pageDescription={`Manage your subscription and usage limits for ${organization?.name}`}
     >
       <div className='space-y-6'>
-        {/* Info Alert */}
         <Alert>
           <Icons.info className='h-4 w-4' />
           <AlertDescription>
-            Plans and subscriptions are managed through Clerk Billing. Subscribe to a plan to unlock
-            features and higher limits.
+            Số liệu dưới đây được suy ra từ catalogue phòng hiện tại để làm dashboard mẫu cho Lavie Home.
           </AlertDescription>
         </Alert>
 
-        {/* Clerk Pricing Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Plans</CardTitle>
-            <CardDescription>Choose a plan that fits your organization's needs</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='mx-auto max-w-4xl'>
-              <PricingTable for='organization' />
-            </div>
-          </CardContent>
-        </Card>
+        <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
+          <Card>
+            <CardHeader>
+              <CardDescription>Tổng doanh thu mẫu</CardDescription>
+              <CardTitle className='text-2xl tabular-nums'>{money(revenue.total)}đ</CardTitle>
+            </CardHeader>
+            <CardFooter className='text-muted-foreground text-sm'>Tổng từ booking gần nhất.</CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Giá trung bình</CardDescription>
+              <CardTitle className='text-2xl tabular-nums'>{money(revenue.average)}đ</CardTitle>
+            </CardHeader>
+            <CardFooter className='text-muted-foreground text-sm'>Giá trị trung bình theo booking mẫu.</CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Booking cao nhất</CardDescription>
+              <CardTitle className='text-2xl tabular-nums'>{money(revenue.highest)}đ</CardTitle>
+            </CardHeader>
+            <CardFooter className='text-muted-foreground text-sm'>Đơn giá lớn nhất trong mẫu.</CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardDescription>Booking thấp nhất</CardDescription>
+              <CardTitle className='text-2xl tabular-nums'>{money(revenue.lowest)}đ</CardTitle>
+            </CardHeader>
+            <CardFooter className='text-muted-foreground text-sm'>Đơn giá nhỏ nhất trong mẫu.</CardFooter>
+          </Card>
+        </div>
+
+        <div className='grid gap-4 lg:grid-cols-2'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Cơ cấu giá phòng</CardTitle>
+              <CardDescription>Kiểm tra dải giá nào đang chiếm tỷ trọng lớn nhất.</CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+              {bands.map((band) => (
+                <div key={band.label} className='flex items-center justify-between rounded-lg border p-3'>
+                  <div>
+                    <div className='font-medium'>{band.label}</div>
+                    <div className='text-muted-foreground text-sm'>{band.share}% catalogue</div>
+                  </div>
+                  <Badge variant='outline'>{band.count} phòng</Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Top booking gần đây</CardTitle>
+              <CardDescription>Danh sách đơn mẫu giúp đọc nhanh doanh thu.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className='overflow-hidden rounded-lg border'>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Khách</TableHead>
+                      <TableHead>Chi nhánh</TableHead>
+                      <TableHead>Trạng thái</TableHead>
+                      <TableHead className='text-right'>Giá</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {revenue.bookings.map((booking) => (
+                      <TableRow key={booking.id}>
+                        <TableCell className='font-medium'>{booking.guestName}</TableCell>
+                        <TableCell>{booking.branch.name}</TableCell>
+                        <TableCell>{booking.status}</TableCell>
+                        <TableCell className='text-right'>{money(booking.amount)}đ</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </PageContainer>
   );
 }
-

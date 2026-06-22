@@ -1,69 +1,46 @@
-﻿import { Avatar, AvatarFallback, AvatarImage } from '@/starter/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/starter/components/ui/avatar';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/starter/components/ui/card';
-
-const salesData = [
-  {
-    name: 'Olivia Martin',
-    email: 'olivia.martin@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/1.png',
-    fallback: 'OM',
-    amount: '+$1,999.00'
-  },
-  {
-    name: 'Jackson Lee',
-    email: 'jackson.lee@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/2.png',
-    fallback: 'JL',
-    amount: '+$39.00'
-  },
-  {
-    name: 'Isabella Nguyen',
-    email: 'isabella.nguyen@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/3.png',
-    fallback: 'IN',
-    amount: '+$299.00'
-  },
-  {
-    name: 'William Kim',
-    email: 'will@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/4.png',
-    fallback: 'WK',
-    amount: '+$99.00'
-  },
-  {
-    name: 'Sofia Davis',
-    email: 'sofia.davis@email.com',
-    avatar: 'https://api.slingacademy.com/public/sample-users/5.png',
-    fallback: 'SD',
-    amount: '+$39.00'
-  }
-];
+import { getBookingSnapshots } from '@/lib/homestay-dashboard';
+import { money } from '@/lib/tete-data';
 
 export function RecentSales() {
+  const bookings = getBookingSnapshots(6);
+
   return (
     <Card className='h-full'>
       <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-        <CardDescription>You made 265 sales this month.</CardDescription>
+        <CardTitle>Booking gần đây</CardTitle>
+        <CardDescription>6 lượt đặt mẫu mới nhất theo dữ liệu catalogue hiện tại.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className='space-y-8'>
-          {salesData.map((sale, index) => (
-            <div key={index} className='flex items-center'>
-              <Avatar className='h-9 w-9'>
-                <AvatarImage src={sale.avatar} alt='Avatar' />
-                <AvatarFallback>{sale.fallback}</AvatarFallback>
-              </Avatar>
-              <div className='ml-4 space-y-1'>
-                <p className='text-sm leading-none font-medium'>{sale.name}</p>
-                <p className='text-muted-foreground text-sm'>{sale.email}</p>
+        <div className='space-y-6'>
+          {bookings.map((booking) => {
+            const initials = booking.guestName
+              .split(' ')
+              .map((part) => part[0])
+              .slice(0, 2)
+              .join('');
+
+            return (
+              <div key={booking.id} className='flex items-center'>
+                <Avatar className='h-9 w-9'>
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+                <div className='ml-4 space-y-1'>
+                  <p className='text-sm leading-none font-medium'>{booking.guestName}</p>
+                  <p className='text-muted-foreground text-sm'>
+                    {booking.room.card_name} · {booking.branch.name}
+                  </p>
+                </div>
+                <div className='ml-auto text-right font-medium'>
+                  <p>{money(booking.amount)}đ</p>
+                  <p className='text-muted-foreground text-xs'>{booking.status}</p>
+                </div>
               </div>
-              <div className='ml-auto font-medium'>{sale.amount}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>
   );
 }
-

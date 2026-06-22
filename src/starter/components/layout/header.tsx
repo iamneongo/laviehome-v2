@@ -1,9 +1,10 @@
 import React from 'react';
-import { SidebarTrigger } from '../ui/sidebar';
-import { Separator } from '../ui/separator';
+
 import { Breadcrumbs } from '../breadcrumbs';
 import SearchInput from '../search-input';
 import { NotificationCenter } from '@/starter/features/notifications/components/notification-center';
+import { SidebarTrigger } from '../ui/sidebar';
+import { Separator } from '../ui/separator';
 
 export default function Header() {
   return (
@@ -18,8 +19,8 @@ export default function Header() {
         <div className='hidden md:flex'>
           <SearchInput />
         </div>
-        <div className='hidden sm:flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-yellow-100'>
-          Lavie Home
+        <div className='hidden items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-yellow-100 sm:flex'>
+          Quản lý homestay
         </div>
         <NotificationCenter />
       </div>

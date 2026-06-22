@@ -1,15 +1,21 @@
-﻿import PageContainer from '@/starter/components/layout/page-container';
+import React from 'react';
+
+import PageContainer from '@/starter/components/layout/page-container';
 import { Badge } from '@/starter/components/ui/badge';
 import {
   Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   CardAction,
-  CardFooter
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from '@/starter/components/ui/card';
 import { Icons } from '@/starter/components/icons';
-import React from 'react';
+import {
+  getBookingStatusSummary,
+  getBranchSummaries,
+  getDashboardMetrics
+} from '@/lib/homestay-dashboard';
 
 export default function OverViewLayout({
   sales,
@@ -22,106 +28,106 @@ export default function OverViewLayout({
   bar_stats: React.ReactNode;
   area_stats: React.ReactNode;
 }) {
+  const metrics = getDashboardMetrics();
+  const bookingSummary = getBookingStatusSummary(12);
+  const branchSummaries = getBranchSummaries(1);
+  const featuredBranch = branchSummaries[0];
+
   return (
-    <PageContainer>
-      <div className='flex flex-1 flex-col space-y-2'>
-        <div className='flex items-center justify-between'>
-          <h2 className='text-2xl font-bold tracking-tight'>Hi, Welcome back ðŸ‘‹</h2>
+    <PageContainer
+      pageTitle='Bảng điều khiển homestay'
+      pageDescription='Tổng hợp booking, phòng, chi nhánh, giá bán và chất lượng nội dung của Lavie Home.'
+    >
+      <div className='flex flex-1 flex-col space-y-4'>
+        <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
+          <div>
+            <h2 className='text-2xl font-bold tracking-tight md:text-3xl'>Tổng quan vận hành Lavie Home</h2>
+            <p className='text-muted-foreground mt-1 max-w-3xl text-sm leading-6'>
+              Đây là nơi nhìn nhanh tình trạng chi nhánh, phòng đang bán, mức giá và booking mẫu để đồng bộ
+              với nội dung public site.
+            </p>
+          </div>
+          <div className='hidden items-center gap-2 md:flex'>
+            <Badge variant='outline'>
+              <Icons.sparkles />
+              Nội dung homestay
+            </Badge>
+          </div>
         </div>
 
-        <div className='*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4'>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Total Revenue</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                $1,250.00
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingUp />
-                  +12.5%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Trending up this month <Icons.trendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Visitors for the last 6 months</div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>New Customers</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                1,234
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingDown />
-                  -20%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Down 20% this period <Icons.trendingDown className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Acquisition needs attention</div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Active Accounts</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                45,678
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingUp />
-                  +12.5%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Strong user retention <Icons.trendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Engagement exceed targets</div>
-            </CardFooter>
-          </Card>
-          <Card className='@container/card'>
-            <CardHeader>
-              <CardDescription>Growth Rate</CardDescription>
-              <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-                4.5%
-              </CardTitle>
-              <CardAction>
-                <Badge variant='outline'>
-                  <Icons.trendingUp />
-                  +4.5%
-                </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className='flex-col items-start gap-1.5 text-sm'>
-              <div className='line-clamp-1 flex gap-2 font-medium'>
-                Steady performance increase <Icons.trendingUp className='size-4' />
-              </div>
-              <div className='text-muted-foreground'>Meets growth projections</div>
-            </CardFooter>
-          </Card>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4'>
+          {metrics.map((metric, index) => {
+            const summary = bookingSummary[index % bookingSummary.length];
+            const Icon = index === 0 ? Icons.dashboard : index === 1 ? Icons.product : index === 2 ? Icons.creditCard : Icons.badgeCheck;
+            const note = index === 0 ? 'Booking đang theo dõi' : index === 1 ? 'Phân bổ theo chi nhánh' : index === 2 ? 'Giá khởi điểm trung bình' : 'Nội dung đủ dùng';
+
+            return (
+              <Card key={metric.label} className='@container/card'>
+                <CardHeader>
+                  <CardDescription>{metric.label}</CardDescription>
+                  <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
+                    {metric.value}
+                  </CardTitle>
+                  <CardAction>
+                    <Badge variant='outline'>
+                      <Icon />
+                      {note}
+                    </Badge>
+                  </CardAction>
+                </CardHeader>
+                <CardFooter className='flex-col items-start gap-1.5 text-sm'>
+                  <div className='line-clamp-1 flex gap-2 font-medium'>
+                    {index === 0 ? (
+                      <>
+                        Booking đang theo dõi <Icons.calendar className='size-4' />
+                      </>
+                    ) : index === 1 ? (
+                      <>
+                        Phân bổ theo chi nhánh <Icons.workspace className='size-4' />
+                      </>
+                    ) : index === 2 ? (
+                      <>
+                        Giá khởi điểm trung bình <Icons.trendingUp className='size-4' />
+                      </>
+                    ) : (
+                      <>
+                        Phòng có ảnh thật <Icons.check className='size-4' />
+                      </>
+                    )}
+                  </div>
+                  <div className='text-muted-foreground'>
+                    {metric.note}
+                    {summary ? ` · Trạng thái mẫu: ${summary.status}` : ''}
+                  </div>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
+
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7'>
           <div className='col-span-4'>{bar_stats}</div>
-          <div className='col-span-4 md:col-span-3'>
-            {/* sales arallel routes */}
-            {sales}
-          </div>
+          <div className='col-span-4 md:col-span-3'>{sales}</div>
           <div className='col-span-4'>{area_stats}</div>
-          <div className='col-span-4 min-h-0 md:col-span-3'>{pie_stats}</div>
+          <div className='col-span-4 md:col-span-3'>
+            <Card className='h-full'>
+              <CardHeader>
+                <CardDescription>Chi nhánh nổi bật</CardDescription>
+                <CardTitle>{featuredBranch?.branch.name ?? 'Chưa có dữ liệu'}</CardTitle>
+              </CardHeader>
+              <CardFooter className='flex-col items-start gap-2 text-sm'>
+                <div className='font-medium'>{featuredBranch?.city ?? 'Đang cập nhật'}</div>
+                <div className='text-muted-foreground'>
+                  {featuredBranch
+                    ? `${featuredBranch.roomCount} phòng · Giá từ ${featuredBranch.averageFrom.toLocaleString('vi-VN')}đ`
+                    : 'Chưa xác định chi nhánh trọng tâm'}
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+          <div className='col-span-4 md:col-span-3'>{pie_stats}</div>
         </div>
       </div>
     </PageContainer>
   );
 }
-

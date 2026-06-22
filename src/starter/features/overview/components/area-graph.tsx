@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
@@ -11,46 +11,41 @@ import {
 } from '@/starter/components/ui/chart';
 import { Badge } from '@/starter/components/ui/badge';
 import { Icons } from '@/starter/components/icons';
-import React from 'react';
+import { getTrendPoints } from '@/lib/homestay-dashboard';
 
-const chartData = [
-  { month: 'January', desktop: 342, mobile: 245 },
-  { month: 'February', desktop: 876, mobile: 654 },
-  { month: 'March', desktop: 512, mobile: 387 },
-  { month: 'April', desktop: 629, mobile: 521 },
-  { month: 'May', desktop: 458, mobile: 412 },
-  { month: 'June', desktop: 781, mobile: 598 },
-  { month: 'July', desktop: 394, mobile: 312 },
-  { month: 'August', desktop: 925, mobile: 743 },
-  { month: 'September', desktop: 647, mobile: 489 },
-  { month: 'October', desktop: 532, mobile: 476 },
-  { month: 'November', desktop: 803, mobile: 687 },
-  { month: 'December', desktop: 271, mobile: 198 }
-];
+const chartData = getTrendPoints();
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
+  bookings: {
+    label: 'Booking',
     color: 'var(--chart-1)'
   },
-  mobile: {
-    label: 'Mobile',
+  premium: {
+    label: 'Phòng premium',
     color: 'var(--chart-2)'
+  },
+  occupancy: {
+    label: 'Tỷ lệ lấp đầy',
+    color: 'var(--chart-3)'
   }
 } satisfies ChartConfig;
 
 export function AreaGraph() {
+  const first = chartData[0];
+  const last = chartData[chartData.length - 1];
+  const growth = first ? Math.max(0, Math.round(((last.bookings - first.bookings) / Math.max(first.bookings, 1)) * 100)) : 0;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          Dotted Area Chart
+          Xu hướng booking 6 tháng
           <Badge variant='outline'>
             <Icons.trendingUp />
-            -5.2%
+            +{growth}%
           </Badge>
         </CardTitle>
-        <CardDescription>Showing total visitors for the last 6 months</CardDescription>
+        <CardDescription>Theo dõi booking, phòng premium và độ lấp đầy của hệ thống.</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -61,29 +56,37 @@ export function AreaGraph() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
               <DottedBackgroundPattern config={chartConfig} />
             </defs>
             <Area
-              dataKey='mobile'
+              dataKey='bookings'
               type='natural'
-              fill='url(#dotted-background-pattern-mobile)'
-              fillOpacity={0.4}
-              stroke='var(--color-mobile)'
+              fill='url(#dotted-background-pattern-bookings)'
+              fillOpacity={0.35}
+              stroke='var(--color-bookings)'
               stackId='a'
-              strokeWidth={0.8}
+              strokeWidth={1.5}
             />
             <Area
-              dataKey='desktop'
+              dataKey='premium'
               type='natural'
-              fill='url(#dotted-background-pattern-desktop)'
-              fillOpacity={0.4}
-              stroke='var(--color-desktop)'
+              fill='url(#dotted-background-pattern-premium)'
+              fillOpacity={0.35}
+              stroke='var(--color-premium)'
               stackId='a'
-              strokeWidth={0.8}
+              strokeWidth={1.5}
+            />
+            <Area
+              dataKey='occupancy'
+              type='natural'
+              fill='url(#dotted-background-pattern-occupancy)'
+              fillOpacity={0.2}
+              stroke='var(--color-occupancy)'
+              stackId='a'
+              strokeWidth={1.5}
             />
           </AreaChart>
         </ChartContainer>
@@ -93,9 +96,8 @@ export function AreaGraph() {
 }
 
 const DottedBackgroundPattern = ({ config }: { config: ChartConfig }) => {
-  const items = Object.fromEntries(
-    Object.entries(config).map(([key, value]) => [key, value.color])
-  );
+  const items = Object.fromEntries(Object.entries(config).map(([key, value]) => [key, value.color]));
+
   return (
     <>
       {Object.entries(items).map(([key, value]) => (
@@ -114,4 +116,3 @@ const DottedBackgroundPattern = ({ config }: { config: ChartConfig }) => {
     </>
   );
 };
-

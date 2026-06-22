@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { LabelList, Pie, PieChart } from 'recharts';
 
@@ -11,53 +11,59 @@ import {
 } from '@/starter/components/ui/chart';
 import { Badge } from '@/starter/components/ui/badge';
 import { Icons } from '@/starter/components/icons';
+import { getBookingStatusSummary } from '@/lib/homestay-dashboard';
 
-const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 90, fill: 'var(--color-other)' }
+const statusColors = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)'
 ];
 
+const chartData = getBookingStatusSummary(12).map((item, index) => ({
+  status: item.status,
+  count: item.count,
+  fill: statusColors[index] ?? 'var(--chart-5)'
+}));
+
 const chartConfig = {
-  visitors: {
-    label: 'Visitors'
+  count: {
+    label: 'Booking'
   },
-  chrome: {
-    label: 'Chrome',
+  'Đã xác nhận': {
+    label: 'Đã xác nhận',
     color: 'var(--chart-1)'
   },
-  safari: {
-    label: 'Safari',
+  'Chờ cọc': {
+    label: 'Chờ cọc',
     color: 'var(--chart-2)'
   },
-  firefox: {
-    label: 'Firefox',
+  'Đang ở': {
+    label: 'Đang ở',
     color: 'var(--chart-3)'
   },
-  edge: {
-    label: 'Edge',
+  'Hoàn tất': {
+    label: 'Hoàn tất',
     color: 'var(--chart-4)'
-  },
-  other: {
-    label: 'Other',
-    color: 'var(--chart-5)'
   }
 } satisfies ChartConfig;
 
 export function PieGraph() {
+  const total = chartData.reduce((sum, item) => sum + item.count, 0);
+  const confirmed = chartData.find((item) => item.status === 'Đã xác nhận')?.count ?? 0;
+  const confirmedShare = total ? Math.round((confirmed / total) * 100) : 0;
+
   return (
     <Card className='flex h-full flex-col'>
       <CardHeader className='items-center pb-0'>
         <CardTitle>
-          Pie Chart
+          Trạng thái booking
           <Badge variant='outline'>
-            <Icons.trendingUp />
-            +5.2%
+            <Icons.badgeCheck />
+            {confirmedShare}%
           </Badge>
         </CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>Phân bổ booking theo trạng thái trong mẫu dữ liệu hiện tại.</CardDescription>
       </CardHeader>
       <CardContent className='flex flex-1 items-center justify-center pb-0'>
         <ChartContainer
@@ -65,17 +71,18 @@ export function PieGraph() {
           className='[&_.recharts-text]:fill-background mx-auto aspect-square max-h-[300px] min-h-[250px]'
         >
           <PieChart>
-            <ChartTooltip content={<ChartTooltipContent nameKey='visitors' hideLabel />} />
+            <ChartTooltip content={<ChartTooltipContent nameKey='status' hideLabel />} />
             <Pie
               data={chartData}
+              dataKey='count'
+              nameKey='status'
               innerRadius={30}
-              dataKey='visitors'
               radius={10}
               cornerRadius={8}
               paddingAngle={4}
             >
               <LabelList
-                dataKey='visitors'
+                dataKey='count'
                 stroke='none'
                 fontSize={12}
                 fontWeight={500}
@@ -89,4 +96,3 @@ export function PieGraph() {
     </Card>
   );
 }
-
