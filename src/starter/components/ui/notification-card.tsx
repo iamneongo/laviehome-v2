@@ -81,8 +81,10 @@ export const NotificationCard: FC<NotificationCardProps> = ({
   return (
     <div
       className={cn(
-        'group relative w-full rounded-2xl transition-all',
-        isUnread ? 'bg-muted' : 'bg-muted/40',
+        'group relative w-full rounded-2xl border transition-all',
+        isUnread
+          ? 'border-primary/30 bg-card shadow-[0_12px_28px_rgba(0,0,0,0.18)]'
+          : 'border-border/70 bg-card/70 shadow-[0_8px_20px_rgba(0,0,0,0.12)]',
         className
       )}
     >
@@ -148,7 +150,7 @@ export const NotificationCard: FC<NotificationCardProps> = ({
                     className={cn(
                       'flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-normal transition',
                       action.style === 'primary'
-                        ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                        ? 'bg-primary/15 text-primary hover:bg-primary/22'
                         : action.style === 'danger'
                           ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
                           : 'bg-accent text-muted-foreground hover:bg-accent hover:text-foreground',
