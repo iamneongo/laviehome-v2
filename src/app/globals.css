@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../starter/styles/themes/lavie.css";
+@import "../starter/styles/theme.css";
 
 @font-face {
   font-family: "Bricolage Grotesque";
@@ -73,8 +75,8 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #100813;
+  color: #ffffff;
   font-family: var(--font-ui);
   overflow-x: hidden;
   font-variant-numeric: tabular-nums;
