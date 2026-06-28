@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import Providers from '@/starter/components/layout/providers';
-import { Toaster } from '@/starter/components/ui/sonner';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang='vi' className='dark h-full antialiased' data-theme='lavie'>
       <body className='min-h-full flex flex-col bg-background text-foreground font-sans'>
-        <Providers>
-          <Toaster />
-          {children}
-        </Providers>
+        {children}
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import {
   ArrowLeft,
   ArrowRight,
@@ -56,10 +57,47 @@ function amenityIcon(label: string) {
   return entry?.[1] ?? CheckCircle2;
 }
 
-function makeDates() {
-  const weekdays = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+const BlindBagIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 4C14 4 12 5.5 11.5 7.5C11 9.5 9 10 9 10C9 10 7.5 10.5 7 12C6.5 13.5 8 15 8 15C8 15 6 17 6 19.5C6 22 8 26 12 27.5C16 29 20 29 24 27.5C28 26 30 22 30 19.5C30 17 28 15 28 15C28 15 29.5 13.5 29 12C28.5 10.5 27 10 27 10C27 10 25 9.5 24.5 7.5C24 5.5 22 4 20 4H16Z" fill="#EF4444" />
+    <path d="M9 10C10.5 10.5 11.5 11.5 12.5 12.5C14.5 11.5 17.5 11.5 19.5 12.5C20.5 11.5 21.5 10.5 23 10C22 12.5 21 13.5 20.5 14C19 14.5 13 14.5 11.5 14C11 13.5 10 12.5 9 10Z" fill="#F59E0B" />
+    <circle cx="16" cy="13.5" r="2.5" fill="#F59E0B" />
+    <path d="M13 13.5L10 16.5M19 13.5L22 16.5" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 21.5C12 21.5 14 23.5 16 23.5C18 23.5 20 21.5 20 21.5" stroke="#FFF" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
 
-  return Array.from({ length: 5 }, (_, index) => {
+const roomSlots: Record<string, { label: string; duration: string; isOvernight?: boolean }[]> = {
+  Honey: [
+    { label: "9:00 - 12:00", duration: "3T" },
+    { label: "12:30 - 15:30", duration: "3T" },
+    { label: "16:00 - 19:00", duration: "3T" },
+    { label: "19:30 - 8:20", duration: "12T 50", isOvernight: true }
+  ],
+  Squid: [
+    { label: "9:30 - 12:30", duration: "3T" },
+    { label: "13:00 - 16:00", duration: "3T" },
+    { label: "16:30 - 19:30", duration: "3T" },
+    { label: "20:00 - 8:50", duration: "12T 50", isOvernight: true }
+  ],
+  default: [
+    { label: "9:00 - 12:00", duration: "3T" },
+    { label: "12:30 - 15:30", duration: "3T" },
+    { label: "16:00 - 19:00", duration: "3T" },
+    { label: "19:30 - 8:20", duration: "12T 50", isOvernight: true }
+  ]
+};
+
+function getRoomSlots(roomName: string) {
+  if (roomName.includes("Honey")) return roomSlots["Honey"];
+  if (roomName.includes("Squid")) return roomSlots["Squid"];
+  return roomSlots["default"];
+}
+
+function makeDates() {
+  const weekdays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+
+  return Array.from({ length: 9 }, (_, index) => {
     const date = new Date();
     date.setDate(date.getDate() + index);
     const day = String(date.getDate()).padStart(2, '0');
@@ -67,13 +105,38 @@ function makeDates() {
     const weekday = weekdays[date.getDay()];
     return {
       iso: date.toISOString().slice(0, 10),
-      label: index === 0 ? "Hôm nay" : `${weekday}, ${day}/${month}`,
+      label: index === 0 ? "Hôm nay" : weekday,
+      dateLabel: `${day}-${month}`
     };
   });
 }
 
-function isBooked(roomId: number, dayIndex: number, slotIndex: number) {
-  return (roomId + dayIndex * 3 + slotIndex * 5) % 7 === 0;
+function isSlotBooked(roomName: string, dayIndex: number, slotIndex: number) {
+  // Today (day 0) Honey's slots 0 and 1 are booked
+  if (roomName.includes("Honey") && dayIndex === 0 && (slotIndex === 0 || slotIndex === 1)) {
+    return true;
+  }
+  // Today (day 0) Squid's slots 0, 1, and 2 are booked
+  if (roomName.includes("Squid") && dayIndex === 0 && (slotIndex === 0 || slotIndex === 1 || slotIndex === 2)) {
+    return true;
+  }
+  // Monday (day 1) Squid's slots 1 and 2 are booked
+  if (roomName.includes("Squid") && dayIndex === 1 && (slotIndex === 1 || slotIndex === 2)) {
+    return true;
+  }
+  // General pseudo-random booked slots
+  const hash = roomName.charCodeAt(roomName.length - 1) + dayIndex * 5 + slotIndex * 13;
+  return hash % 9 === 0;
+}
+
+function isSlotPromo(roomName: string, dayIndex: number, slotIndex: number) {
+  // Monday (day 1) to Friday (day 5) are promo slots
+  return dayIndex >= 1 && dayIndex <= 5;
+}
+
+function isSlotBlindBag(roomName: string, dayIndex: number, slotIndex: number) {
+  const hash = roomName.charCodeAt(roomName.length - 2) + dayIndex * 7 + slotIndex * 3;
+  return hash % 5 === 1;
 }
 
 type SelectedSlot = {
@@ -118,31 +181,29 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
 
   useGSAP(() => {
     const tl = gsap.timeline();
-    tl.from(".lavie-hero-copy h1", {
+    tl.from(".lavie-cyber-title", {
       opacity: 0,
       y: 40,
       duration: 0.8,
       ease: "power3.out",
     })
-    .from(".lavie-hero-copy p", {
+    .from(".lavie-cyber-p", {
       opacity: 0,
       y: 20,
       duration: 0.6,
       ease: "power3.out",
     }, "-=0.5")
-    .from(".lavie-hero-actions a", {
+    .from(".lavie-cyber-actions a", {
       opacity: 0,
       y: 15,
       duration: 0.5,
       stagger: 0.1,
       ease: "power3.out",
     }, "-=0.4")
-    .from(".lavie-marquee-card", {
+    .from(".lavie-cyber-mockup", {
       opacity: 0,
-      scale: 0.8,
-      rotation: -10,
-      duration: 0.8,
-      stagger: 0.05,
+      scale: 0.95,
+      duration: 0.7,
       ease: "back.out(1.7)",
     }, "-=0.6");
   }, { scope: containerRef });
@@ -165,11 +226,9 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
   const dates = useMemo(() => makeDates(), []);
 
   const subtotal = selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
-  const discountRate = selectedSlots.length === 2 ? 0.1 : selectedSlots.length === 3 ? 0.2 : 0;
-  const comboTotal =
-    selectedSlots.length === 4 && selectedSlots[0]
-      ? selectedSlots[0].price + Math.min(selectedSlots[0].room.full_day_price, selectedSlots[0].price * 2)
-      : subtotal - subtotal * discountRate;
+  const discountRate = selectedSlots.length === 2 ? 0.05 : selectedSlots.length >= 3 ? 0.1 : 0;
+  const extraMinutes = selectedSlots.length === 2 ? 30 : selectedSlots.length >= 3 ? 60 : 0;
+  const comboTotal = subtotal - subtotal * discountRate;
 
   function switchBranch(branchId: number) {
     setActiveBranchId(branchId);
@@ -251,50 +310,66 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
     <div id="top" className="site-shell text-white" ref={containerRef}>
       <SiteHeader />
 
-      <main className="pt-[68px]">
+      <main className="pt-[104px]">
+        {/* Option 3: Neo-Brutalist Cyber-Pink (Chosen Hero Design) with original glowing background */}
         <section className="lavie-hero-section">
-          <div className="lavie-hero-shell">
-            <div className="lavie-hero-copy">
-              <div className="lavie-hero-kicker">
-                <Sparkles size={15} />
-                Lavie Home self check-in 24/7
-              </div>
-              <h1>
-                Phòng nghỉ riêng tư,
-                <span> tự check-in 24/7.</span>
-              </h1>
-              <p>
-                Xem phòng thực tế, chọn giờ nghỉ linh hoạt và nhận thông tin phòng tự động qua điện thoại.
-              </p>
-              <div className="lavie-hero-actions">
-                <a className="primary-button px-6" href="#booking" style={{ textTransform: "none" }}>
-                  Đặt phòng ngay
-                </a>
-                <a className="lavie-hero-secondary" href="#rooms">
-                  Xem phòng trống
-                </a>
-              </div>
-            </div>
+          <div className="lavie-hero-shell !min-h-0 py-12 lg:py-16">
+            <div className="mx-auto w-[min(100%-2rem,1360px)] grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center relative z-10">
+              <div className="space-y-6">
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-pink-600 text-white font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md border border-white">
+                    🔥 HOT DEALS
+                  </span>
+                  <span className="bg-purple-600 text-white font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md border border-white">
+                    🔒 100% BẢO MẬT
+                  </span>
+                </div>
 
-            {heroLoopRooms.length ? (
-              <div className="lavie-hero-marquee" aria-label="Phòng nổi bật">
-                <div className="lavie-hero-marquee-track">
-                  {heroLoopRooms.map((room, index) => (
-                    <article key={`${room.id}-${index}`} className={`lavie-marquee-card variant-${index % 4}`}>
-                      <Image
-                        src={room.main_image}
-                        alt={`${room.card_name} tại ${room.branch_name}`}
-                        fill
-                        priority={index < 4}
-                        sizes="(min-width: 1024px) 210px, 150px"
-                        className="object-cover"
-                      />
-                      <span>{room.card_name.replace("Phòng ", "")}</span>
-                    </article>
-                  ))}
+                <h1 className="lavie-cyber-title text-5xl sm:text-6xl font-black text-white leading-none tracking-tight">
+                  PHÒNG NGHỈ <br />
+                  <span className="bg-yellow-300 text-[#100813] px-3 py-1.5 inline-block transform -rotate-1 font-black my-2 border-2 border-white shadow-[4px_4px_0px_#f43f5e]">
+                    TỰ CHECK-IN
+                  </span> <br />
+                  RIÊNG TƯ 24/7.
+                </h1>
+
+                <p className="lavie-cyber-p text-white/80 text-sm md:text-base max-w-[50ch] font-semibold leading-relaxed">
+                  Không làm phiền, nhận phòng tự động qua ứng dụng Zalo. Xem trước hình ảnh 100% thực tế của phòng trước khi xuống tiền đặt chỗ.
+                </p>
+
+                <div className="lavie-cyber-actions flex flex-col sm:flex-row gap-4 max-w-md pt-2">
+                  <a href="#booking" className="bg-pink-500 hover:bg-pink-400 text-white font-extrabold text-center px-8 py-3.5 rounded-xl border-2 border-white shadow-[4px_4px_0px_white] hover:shadow-[2px_2px_0px_white] transition-all duration-150 inline-block">
+                    CHỌN GIỜ ĐẶT PHÒNG
+                  </a>
+                  <a href="#rooms" className="bg-slate-800 hover:bg-slate-700 text-white font-bold text-center px-6 py-3.5 rounded-xl border-2 border-white shadow-[4px_4px_0px_rgba(255,255,255,0.15)] hover:shadow-[2px_2px_0px_rgba(255,255,255,0.15)] transition-all duration-150 inline-block">
+                    Danh sách phòng
+                  </a>
                 </div>
               </div>
-            ) : null}
+
+              {/* Khung ảnh mockup bên phải dạng thẻ viền dày */}
+              <div className="lavie-cyber-mockup relative p-2">
+                <div className="border-4 border-white bg-slate-900 rounded-3xl overflow-hidden shadow-[8px_8px_0px_rgba(243,90,189,0.5)] aspect-[4/3] relative">
+                  {featuredRooms[0] && (
+                    <Image 
+                      src={featuredRooms[0].main_image} 
+                      alt="Preview Room"
+                      fill
+                      sizes="(min-width: 1024px) 500px, 300px"
+                      className="object-cover"
+                    />
+                  )}
+                  {/* Floating Info Badge 1 */}
+                  <div className="absolute top-4 left-4 bg-[#100813] border-2 border-white text-yellow-300 px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-[3px_3px_0px_#fff]">
+                    <Sparkles size={12} /> Bồn tắm & Máy chiếu 4K
+                  </div>
+                  {/* Floating Info Badge 2 */}
+                  <div className="absolute bottom-4 right-4 bg-[#100813] border-2 border-white text-pink-300 px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-[3px_3px_0px_#fff]">
+                    ⭐ 4.9/5 (1.2k+ đánh giá)
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -317,10 +392,10 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
               return (
                 <button
                   key={branch.id}
-                  className={`flex flex-col items-start text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                  className={`flex flex-col items-start text-left p-5 rounded-2xl border-2 transition-all duration-150 cursor-pointer ${
                     isSelected
-                      ? "border-pink-300 bg-gradient-to-br from-pink-500/20 to-yellow-500/5 text-white shadow-[0_0_20px_rgba(243,90,189,0.15)]"
-                      : "border-white/10 bg-white/5 text-white hover:-translate-y-0.5 hover:bg-white/8 hover:border-white/20"
+                      ? "border-pink-500 bg-pink-500/10 text-white shadow-[4px_4px_0px_#f35abd] -translate-y-1"
+                      : "border-white/10 bg-white/5 text-white/70 hover:-translate-y-1 hover:bg-white/10 hover:border-white hover:shadow-[4px_4px_0px_white]"
                   }`}
                   onClick={() => switchBranch(branch.id)}
                 >
@@ -381,148 +456,313 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
                   <span className="text-pink-200">{money(room.price_to)}đ</span>
                 </p>
                 <p className="mt-1 text-sm font-bold text-white/65">Qua đêm: {money(room.full_day_price)}đ</p>
-                <button className="primary-button mt-5 w-full" onClick={() => setModalRoom(room)}>
-                  <Sparkles size={16} /> Xem ảnh & Đặt phòng
-                </button>
+                <Link className="primary-button mt-5 w-full text-center" href={`/rooms/${room.id}`}>
+                  Xem ảnh & Đặt phòng
+                </Link>
               </article>
             ))}
           </div>
         </section>
 
         <section id="booking" className="mx-auto w-[min(100%-2rem,1360px)] scroll-mt-28 py-8">
-          <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="eyebrow">Check-in tự động</p>
-              <h2 className="mt-2 text-2xl font-extrabold leading-tight tracking-[-0.025em] md:text-4xl">Đặt phòng siêu tốc</h2>
-            </div>
-            <div className="flex flex-col items-start gap-3 md:items-end">
-              <p className="max-w-md text-sm font-semibold leading-6 text-white/62 md:text-right md:text-[0.95rem]">Chọn khung giờ và ngày bạn muốn check-in bên dưới nhé.</p>
-              <div className="hidden gap-2 md:flex">
-                <button className="icon-button" onClick={() => scrollBooking(-1)} aria-label="Cuộn bảng sang trái">
-                  <ArrowLeft size={18} />
-                </button>
-                <button className="icon-button" onClick={() => scrollBooking(1)} aria-label="Cuộn bảng sang phải">
-                  <ArrowRight size={18} />
-                </button>
-              </div>
+          <div className="mb-8 text-center flex flex-col items-center justify-center">
+            <h2 className="text-3xl font-black leading-tight tracking-[-0.03em] md:text-5xl text-white">
+              Lịch đặt phòng
+            </h2>
+            <p className="mt-3 text-pink-500 font-extrabold text-lg md:text-xl uppercase tracking-wider animate-pulse">
+              Tất cả chi nhánh tại {currentBranch?.name.split(" - ")[0] || "Hà Nội"}
+            </p>
+            <div className="mt-4 inline-block bg-white text-pink-600 px-6 py-2.5 rounded-2xl font-black text-sm md:text-base border border-pink-200 shadow-lg uppercase tracking-wide">
+              {currentBranch?.name.split(" - ").slice(1).join(" - ") || currentBranch?.name || "Chi nhánh"}
             </div>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="glass-panel booking-panel self-start rounded-3xl">
-              <div ref={bookingScrollRef} className="booking-scroll">
-                <table className="booking-table">
+          {/* Legends list */}
+          <div className="flex flex-wrap items-center justify-center gap-6 mb-8 text-sm font-bold text-white/90">
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-lg bg-rose-500 border border-transparent shadow-sm" />
+              <span>Đã Đặt</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-lg border-2 border-rose-500 bg-white/5" />
+              <span>Còn Trống</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-lg bg-yellow-400 text-slate-900 border border-yellow-300" />
+              <span>Đang chọn</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-lg border-2 border-transparent bg-origin-border bg-gradient-to-r from-orange-400 to-pink-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]" />
+              <span>Khuyến mãi</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 flex items-center justify-center">
+                <BlindBagIcon size={20} />
+              </div>
+              <span>Túi mù</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-5">
+            <div className="glass-panel booking-panel rounded-3xl overflow-hidden border border-white/10 bg-white/2">
+              <div ref={bookingScrollRef} className="booking-scroll hide-scrollbar overflow-x-auto">
+                <table className="booking-table border-collapse w-full text-center">
                   <thead>
-                    <tr>
-                      <th className="booking-date-head">Ngày / giờ</th>
+                    {/* Row 1: Tên phòng */}
+                    <tr className="border-b border-white/10 bg-white/5">
+                      <th colSpan={2} className="p-3 text-center border-r border-white/10 text-xs font-black uppercase tracking-wider text-pink-200">
+                        Tên phòng
+                      </th>
                       {calendarRooms.map((room) => (
-                        <th key={room.id} className="booking-room-head" data-room-name={room.card_name}>
+                        <th
+                          key={room.id}
+                          colSpan={getRoomSlots(room.card_name).length}
+                          className="p-3 text-center border-r border-white/10 text-sm font-extrabold text-pink-100"
+                        >
                           {room.card_name.replace("Phòng ", "")}
                         </th>
                       ))}
                     </tr>
+                    {/* Row 2: Thứ / Ngày / Slots */}
+                    <tr className="border-b border-white/10 bg-white/3">
+                      <th className="p-2.5 border-r border-white/10 text-[11px] font-bold text-white/60 text-center">Thứ</th>
+                      <th className="p-2.5 border-r border-white/10 text-[11px] font-bold text-white/60 text-center">Ngày</th>
+                      {calendarRooms.map((room) =>
+                        getRoomSlots(room.card_name).map((slot, sIdx) => (
+                          <th
+                            key={`${room.id}-slot-head-${sIdx}`}
+                            className="p-2.5 border-r border-white/10 text-[10px] font-medium text-white/70 text-center min-w-[95px]"
+                          >
+                            <div className="flex flex-col items-center justify-center gap-0.5">
+                              <span className="font-semibold text-white/95">{slot.label}</span>
+                              <span className="flex items-center gap-0.5 text-[9px] font-bold text-white/40">
+                                {slot.isOvernight && <span className="text-pink-300">🌙</span>}
+                                {slot.duration}
+                              </span>
+                            </div>
+                          </th>
+                        ))
+                      )}
+                    </tr>
                   </thead>
                   <tbody>
-                    {dates.map((date, dayIndex) =>
-                      slotLabels.map((slot, slotIndex) => (
-                        <tr key={`${date.iso}-${slot}`}>
-                          <td className="booking-date-cell">
-                            <span className="block text-yellow-200">{date.label}</span>
-                            <span className="text-white/70">{slot}</span>
-                          </td>
-                          {calendarRooms.map((room) => {
+                    {dates.map((date, dayIndex) => (
+                      <tr key={date.iso} className="border-b border-white/5 hover:bg-white/3 transition-colors duration-150">
+                        <td className="p-3 text-center border-r border-white/10 font-bold text-xs text-white/80">
+                          <span className={date.label === "Hôm nay" ? "text-pink-400 font-extrabold" : ""}>
+                            {date.label}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center border-r border-white/10 font-bold text-xs text-white/80">
+                          <span className={date.label === "Hôm nay" ? "text-pink-400 font-extrabold" : ""}>
+                            {date.dateLabel}
+                          </span>
+                        </td>
+                        {calendarRooms.map((room) => {
+                          const slots = getRoomSlots(room.card_name);
+                          return slots.map((slot, slotIndex) => {
                             const id = `${room.id}-${date.iso}-${slotIndex}`;
-                            const booked = isBooked(room.id, dayIndex, slotIndex);
+                            const booked = isSlotBooked(room.card_name, dayIndex, slotIndex);
                             const selected = selectedSlots.some((item) => item.id === id);
-                            const discounted = slotIndex >= 2;
+                            const promo = isSlotPromo(room.card_name, dayIndex, slotIndex);
+                            const hasBlindBag = isSlotBlindBag(room.card_name, dayIndex, slotIndex);
+                            const price = slot.isOvernight ? room.full_day_price : room.price_from;
+
                             return (
-                              <td key={id} className="slot-cell">
+                              <td key={id} className="p-2.5 text-center border-r border-white/5 align-middle">
                                 <button
                                   disabled={booked}
-                                  className={`booking-slot ${
-                                    booked
-                                      ? "is-booked"
-                                      : selected
-                                        ? "is-selected"
-                                        : discounted
-                                          ? "is-discounted"
-                                          : "is-open"
-                                  }`}
                                   onClick={() =>
                                     toggleSlot({
                                       id,
                                       room,
-                                      date: date.label,
+                                      date: date.label === "Hôm nay" ? "Hôm nay" : `${date.label}, ${date.dateLabel}`,
                                       dateIso: date.iso,
-                                      time: slot,
-                                      price: room.price_from,
-                                      position: dayIndex * slotLabels.length + slotIndex,
+                                      time: `${slot.label} (${slot.duration})`,
+                                      price,
+                                      position: dayIndex * slots.length + slotIndex,
                                     })
                                   }
+                                  className={`
+                                    w-14 h-9 rounded-xl transition-all duration-200 flex items-center justify-center relative cursor-pointer outline-none border mx-auto
+                                    ${
+                                      booked
+                                        ? "bg-rose-500 border-transparent cursor-not-allowed shadow-[inset_0_1px_3px_rgba(0,0,0,0.2)]"
+                                        : selected
+                                          ? "bg-yellow-400 border-yellow-300 text-slate-950 font-black shadow-[0_0_10px_rgba(234,179,8,0.4)] hover:bg-yellow-300"
+                                          : promo
+                                            ? "border-transparent bg-white/5 hover:bg-white/10 ring-1 ring-pink-500/50 shadow-[0_0_8px_rgba(244,63,94,0.15)]"
+                                            : "border-rose-500/60 bg-white/5 hover:bg-white/10 hover:border-rose-400"
+                                    }
+                                  `}
+                                  title={booked ? "Đã đặt" : `Khung giờ ${slot.label} - Giá: ${money(price)}đ`}
                                 >
-                                  {booked ? "Đã đặt" : `${money(room.price_from)}đ`}
+                                  {booked ? (
+                                    <span className="text-[10px] font-bold text-white/50">-</span>
+                                  ) : (
+                                    <>
+                                      {hasBlindBag && !selected && (
+                                        <div className="absolute inset-0 flex items-center justify-center animate-bounce">
+                                          <BlindBagIcon size={18} />
+                                        </div>
+                                      )}
+                                      <span className="opacity-0 hover:opacity-100 absolute inset-0 flex items-center justify-center text-[9px] font-extrabold bg-slate-900/90 text-white rounded-xl transition-opacity duration-150">
+                                        {money(price)}đ
+                                      </span>
+                                    </>
+                                  )}
                                 </button>
                               </td>
                             );
-                          })}
-                        </tr>
-                      )),
-                    )}
+                          });
+                        })}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
 
-            <aside className="glass-panel sticky top-24 self-start rounded-3xl p-5">
-              <h3 className="border-b border-pink-300/20 pb-4 text-center text-base font-extrabold text-pink-200">
-                Thông Tin Đặt Phòng
-              </h3>
-              <div className="mt-4 grid gap-3 text-sm">
-                <SummaryRow icon={BedDouble} label="Phòng" value={selectedSummary?.room ?? "Chưa chọn"} />
-                <SummaryRow icon={MapPin} label="Chi nhánh" value={selectedSummary?.branch ?? currentBranch?.name ?? "Chưa chọn"} />
-                <SummaryRow icon={CalendarDays} label="Ngày" value={selectedSummary?.date ?? "Chưa chọn"} />
-                <SummaryRow icon={Clock3} label="Khung giờ" value={selectedSummary?.time ?? "Chưa chọn"} />
-              </div>
-              <div className="mt-5 border-t border-white/10 pt-4 text-sm">
-                <div className="flex justify-between text-white/70">
-                  <span>Giá gốc</span>
-                  <span>{money(subtotal)}đ</span>
+            {/* Selected summary details block */}
+            {selectedSlots.length > 0 && (
+              <div className="rounded-3xl p-6 border-2 border-white/20 bg-[#1b111f] shadow-[6px_6px_0px_rgba(255,255,255,0.05)]">
+                <h3 className="text-base font-extrabold text-pink-200 border-b border-white/10 pb-3 mb-4 flex items-center gap-2">
+                  <Sparkles size={16} /> Chi tiết khung giờ đã chọn
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-sm">
+                  <SummaryRow icon={BedDouble} label="Phòng" value={selectedSummary?.room ?? "Chưa chọn"} />
+                  <SummaryRow icon={MapPin} label="Chi nhánh" value={selectedSummary?.branch ?? currentBranch?.name ?? "Chưa chọn"} />
+                  <SummaryRow icon={CalendarDays} label="Ngày" value={selectedSummary?.date ?? "Chưa chọn"} />
+                  <SummaryRow icon={Clock3} label="Khung giờ" value={selectedSummary?.time ?? "Chưa chọn"} />
                 </div>
-                {selectedSlots.length > 1 ? (
-                  <div className="mt-2 flex justify-between text-emerald-300">
-                    <span>Ưu đãi</span>
-                    <span>{selectedSlots.length === 4 ? "Combo 4 khung" : `${Math.round(discountRate * 100)}%`}</span>
+                <div className="mt-4 flex flex-wrap gap-4 justify-between border-t border-white/5 pt-4 text-sm text-white/70">
+                  <div className="flex gap-6">
+                    <div>Giá gốc: <span className="text-white font-bold">{money(subtotal)}đ</span></div>
+                    {selectedSlots.length > 1 && (
+                      <>
+                        <div className="text-emerald-300">Ưu đãi: <span className="font-bold">-{money(subtotal * discountRate)}đ ({Math.round(discountRate * 100)}%)</span></div>
+                        <div className="text-cyan-300">Tặng thêm: <span className="font-bold">+{extraMinutes} phút nghỉ</span></div>
+                      </>
+                    )}
                   </div>
-                ) : null}
-                <div className="mt-4 flex justify-between text-base font-extrabold">
-                  <span>Tổng cộng</span>
-                  <span className="text-yellow-200">{money(Math.max(comboTotal, 0))}đ</span>
                 </div>
+              </div>
+            )}
+
+            {/* Pricing Action Row */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-white/10 pt-6">
+              <div className="text-xl font-extrabold text-white flex items-baseline gap-2">
+                <span>Tổng tiền tạm tính:</span>
+                <span className="text-2xl text-yellow-200">{money(Math.max(comboTotal, 0))} đ</span>
               </div>
               <button
-                className="primary-button mt-5 w-full disabled:cursor-not-allowed disabled:opacity-45"
                 disabled={!selectedSlots.length}
                 onClick={goToCheckout}
+                className="primary-button !min-h-12 px-8 text-base font-extrabold uppercase tracking-wide disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
-                <Bolt size={16} /> Xác nhận đặt phòng
+                Đặt phòng
               </button>
-              <div className="mt-5 grid grid-cols-2 gap-3 text-xs text-white/75">
-                <Legend color="bg-white" label="Còn trống" />
-                <Legend color="bg-yellow-300" label="Đang chọn" />
-                <Legend color="bg-red-500" label="Đã đặt" />
-                <Legend color="bg-emerald-100" label="Đang giảm giá" />
-              </div>
-              <p className="mt-5 text-center text-xs leading-5 text-white/55">
-                Khách hàng được giảm thêm 10% hoặc 20% trên tổng hoá đơn khi chọn book 2, 3 khung giờ.
+            </div>
+
+            {/* Discount Policy Note with cyan border */}
+            <div className="border-2 border-cyan-400 bg-cyan-950/20 rounded-2xl p-5 text-center shadow-[4px_4px_0px_#22d3ee]">
+              <p className="text-sm md:text-base font-black text-cyan-300 leading-relaxed">
+                ** Khách hàng được giảm 5% và tặng thêm 30 Phút khi book 2 khung giờ, 10% và 60 Phút khi book 3 hoặc 4 khung giờ
               </p>
-            </aside>
+            </div>
           </div>
         </section>
 
       </main>
 
-      <footer className="border-t border-white/10 px-4 py-8 text-center text-sm text-white/55">
-        © 2025 Lavie Home. Đặt phòng riêng tư, tự check-in 24/7.
+      <footer className="w-full border-t-2 border-white/10 bg-[#140a16] mt-16 pb-20 md:pb-6">
+        <div className="mx-auto w-[min(100%-2rem,1360px)] py-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
+          {/* Slogan and Brand Column */}
+          <div className="space-y-4">
+            <div className="block">
+              <BrandWordmark />
+            </div>
+            <p className="text-xs text-white/60 font-semibold leading-relaxed max-w-[32ch]">
+              Không gian nghỉ ngơi riêng tư hoàn hảo với quy trình tự động check-in 24/7 siêu tốc. Tiện nghi, hiện đại và bảo mật tuyệt đối.
+            </p>
+            <div className="flex gap-3">
+              <span className="bg-pink-600/10 text-pink-300 font-bold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded border border-pink-500/30">
+                Bảo mật 100%
+              </span>
+              <span className="bg-yellow-500/10 text-yellow-300 font-bold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded border border-yellow-500/30">
+                Ảnh thực tế
+              </span>
+            </div>
+          </div>
+
+          {/* Quick links Column */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-black text-white/50 uppercase tracking-widest">
+              Liên kết nhanh
+            </h4>
+            <ul className="space-y-2 text-xs font-bold text-white/70">
+              <li>
+                <a href="#top" className="hover:text-pink-300 transition-colors">
+                  Trang chủ
+                </a>
+              </li>
+              <li>
+                <Link href="/checking" className="hover:text-pink-300 transition-colors">
+                  Tra cứu đặt phòng
+                </Link>
+              </li>
+              <li>
+                <Link href="/contacts" className="hover:text-pink-300 transition-colors">
+                  Hệ thống chi nhánh
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Hotline / Zalo Column */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-black text-white/50 uppercase tracking-widest">
+              Chi nhánh đang chọn
+            </h4>
+            <div className="space-y-2 text-xs font-bold">
+              <p className="text-white text-xs font-black mb-1">
+                {currentBranch?.name ?? "Lavie Home"}
+              </p>
+              <a 
+                href={`tel:${compactPhone(currentBranch?.hotline ?? "0909123456")}`}
+                className="flex items-center gap-2 text-pink-300 hover:text-pink-400 transition-colors"
+              >
+                <Phone size={14} />
+                Hotline: {currentBranch?.hotline ?? "0909 123 456"}
+              </a>
+              <a 
+                href={`https://zalo.me/${compactPhone(currentBranch?.hotline ?? "0909123456")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-300 hover:text-blue-400 transition-colors"
+              >
+                <MessageCircle size={14} />
+                Nhắn Zalo hỗ trợ 24/7
+              </a>
+              {currentBranch?.google_maps_link && (
+                <a 
+                  href={currentBranch.google_maps_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-yellow-200 hover:text-yellow-300 transition-colors"
+                >
+                  <MapPin size={14} />
+                  Xem bản đồ chỉ đường
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom copyright area */}
+        <div className="border-t border-white/5 py-6 text-center text-[10px] font-bold text-white/40 uppercase tracking-widest">
+          © 2025 Lavie Home. Tất cả quyền được bảo lưu.
+        </div>
       </footer>
 
       <div className="fixed bottom-7 right-5 z-40 hidden flex-col gap-3 md:flex">

@@ -511,3 +511,8 @@ export async function getGuestSummaries(limit = 8): Promise<GuestSummary[]> {
 export function moneyRange(room: RoomSummary['room']) {
   return `${money(room.price_from)}đ - ${money(room.price_to)}đ`;
 }
+
+export async function getPublicRoomById(id: number) {
+  const results = await query<RoomRow>('select * from rooms where id = $1', [id]);
+  return results[0] ?? null;
+}

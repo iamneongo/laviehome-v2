@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ElementType } from 'react';
 
 import { SiteHeader } from '@/components/site-header';
@@ -78,10 +79,10 @@ export default async function CheckoutPage({
   return (
     <main className='site-shell min-h-dvh text-white'>
       <SiteHeader />
-      <div className='mx-auto w-[min(100%-2rem,1180px)] pb-16 pt-24'>
-        <section className='grid items-start gap-5 lg:grid-cols-[1fr_380px]'>
-          <div className='grid gap-5'>
-            <section className='page-panel p-5 md:p-7'>
+      <div className='mx-auto w-[min(100%-2rem,1180px)] pb-16 pt-32'>
+        <section className='grid items-start gap-6 lg:grid-cols-[1fr_380px]'>
+          <div className='grid gap-6'>
+            <section className='page-panel p-6 md:p-8'>
               <p className='eyebrow'>Thanh toán đặt phòng</p>
               <h1 className='mt-3 text-3xl font-extrabold leading-tight tracking-[-0.03em] md:text-5xl'>Xác nhận thông tin</h1>
               <p className='mt-4 max-w-2xl text-sm font-semibold leading-6 text-white/64 md:text-[0.95rem]'>
@@ -89,18 +90,18 @@ export default async function CheckoutPage({
               </p>
             </section>
 
-            <section className='section-card p-5 md:p-6'>
+            <section className='section-card p-6 md:p-8'>
               <h2 className='flex items-center gap-2 text-xl font-extrabold tracking-[-0.025em]'>
                 <UserRound className='text-pink-200' size={21} /> Thông Tin Người Đặt
               </h2>
-              <form className='mt-5 grid gap-4'>
+              <form className='mt-6 grid gap-5'>
                 <label className='grid gap-2 text-sm font-bold text-white/72'>
                   Họ và Tên (*)
-                  <input className='field-input !pl-5' placeholder='Nhập họ và tên' />
+                  <input className='field-input !pl-5' placeholder='Nhập họ và tên' required />
                 </label>
                 <label className='grid gap-2 text-sm font-bold text-white/72'>
                   Số Điện Thoại (*)
-                  <input className='field-input !pl-5' inputMode='tel' placeholder='Số điện thoại nhận mã mở khóa' />
+                  <input className='field-input !pl-5' inputMode='tel' placeholder='Số điện thoại nhận mã mở khóa' required />
                 </label>
 
                 <div className='grid gap-3'>
@@ -113,7 +114,7 @@ export default async function CheckoutPage({
                     ].map(([value, title, note]) => (
                       <label
                         key={value}
-                        className='cursor-pointer rounded-2xl border border-white/10 bg-white/6 p-4 transition hover:border-pink-200/50 hover:bg-white/9'
+                        className='cursor-pointer rounded-2xl border-2 border-white/10 bg-white/5 p-4 transition duration-150 block has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/10 has-[:checked]:shadow-[4px_4px_0px_#f35abd] has-[:checked]:-translate-y-0.5 hover:border-white hover:bg-white/10'
                       >
                         <input className='sr-only' type='radio' name='guest_count' defaultChecked={value === '2'} />
                         <span className='block font-extrabold text-white'>{title}</span>
@@ -127,23 +128,23 @@ export default async function CheckoutPage({
                 <label className='grid gap-2 text-sm font-bold text-white/72'>
                   Ghi Chú/Yêu Cầu Riêng (Tuỳ Chọn)
                   <textarea
-                    className='min-h-28 rounded-3xl border border-white/10 bg-white/8 px-5 py-4 text-sm font-semibold text-white outline-none transition placeholder:text-white/35 focus:border-pink-300/70 focus:bg-white/10'
+                    className='min-h-28 rounded-2xl border-2 border-white/15 bg-white/5 px-5 py-4 text-sm font-semibold text-white outline-none transition placeholder:text-white/35 focus:border-pink-500 focus:bg-white/10 focus:shadow-[3px_3px_0px_#f35abd]'
                     placeholder='Ví dụ: đến muộn 10 phút, cần hỗ trợ thêm...'
                   />
                 </label>
 
-                <label className='flex items-start gap-3 rounded-2xl border border-white/10 bg-white/6 p-4 text-sm font-bold text-white/72'>
-                  <input className='mt-1' type='checkbox' />
+                <label className='flex items-start gap-3 rounded-2xl border-2 border-white/10 bg-white/5 p-4 text-sm font-bold text-white/72 hover:border-white/20 transition-all duration-150 cursor-pointer has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/5'>
+                  <input className='mt-1 accent-pink-500' type='checkbox' />
                   <span>Đến bằng xe hơi (Để nhân viên hỗ trợ chỗ đỗ xe)</span>
                 </label>
-                <label className='flex items-start gap-3 rounded-2xl border border-white/10 bg-white/6 p-4 text-sm font-bold text-white/72'>
-                  <input className='mt-1' type='checkbox' />
+                <label className='flex items-start gap-3 rounded-2xl border-2 border-white/10 bg-white/5 p-4 text-sm font-bold text-white/72 hover:border-white/20 transition-all duration-150 cursor-pointer has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/5'>
+                  <input className='mt-1 accent-pink-500' type='checkbox' />
                   <span>Gói trang trí Sinh nhật, Ngày Lễ,... (tuỳ chọn, sẽ có nhân viên liên hệ tư vấn gói)</span>
                 </label>
               </form>
             </section>
 
-            <section className='section-card p-5 md:p-6'>
+            <section className='section-card p-6 md:p-8'>
               <h2 className='flex items-center gap-2 text-xl font-extrabold tracking-[-0.025em]'>
                 <IdCard className='text-pink-200' size={21} /> Xác Thực Căn Cước
               </h2>
@@ -152,27 +153,27 @@ export default async function CheckoutPage({
               </p>
               <div className='mt-5 grid gap-4 md:grid-cols-2'>
                 <label className='checkout-upload'>
-                  <Upload size={24} />
+                  <Upload size={24} className="text-pink-300" />
                   <span>Mặt Trước CCCD / Bằng Lái</span>
                   <input type='file' accept='image/*' />
                 </label>
                 <label className='checkout-upload'>
-                  <Upload size={24} />
+                  <Upload size={24} className="text-pink-300" />
                   <span>Mặt Sau CCCD / Bằng Lái</span>
                   <input type='file' accept='image/*' />
                 </label>
               </div>
-              <label className='mt-5 flex items-start gap-3 text-sm font-semibold leading-6 text-white/62'>
-                <input className='mt-1' type='checkbox' />
+              <label className='mt-5 flex items-start gap-3 text-sm font-semibold leading-6 text-white/62 cursor-pointer hover:text-white transition-colors'>
+                <input className='mt-1 accent-pink-500' type='checkbox' required />
                 <span>
-                  Tôi đồng ý với <a className='text-yellow-200 underline-offset-4 hover:underline'>Điều khoản và điều kiện</a> và đồng ý bảo lãnh cho bạn cùng phòng.
+                  Tôi đồng ý với <a className='text-yellow-200 underline-offset-4 hover:underline font-bold'>Điều khoản và điều kiện</a> và đồng ý bảo lãnh cho bạn cùng phòng.
                 </span>
               </label>
             </section>
           </div>
 
-          <aside className='grid h-fit gap-5 lg:sticky lg:top-6'>
-            <section className='section-card p-5 md:p-6'>
+          <aside className='grid h-fit gap-6 lg:sticky lg:top-28'>
+            <section className='section-card p-6 md:p-8'>
               <h2 className='flex items-center gap-2 text-lg font-extrabold tracking-[-0.02em]'>
                 <FileText className='text-yellow-200' size={21} /> Tóm Tắt Đặt Phòng
               </h2>
@@ -188,46 +189,54 @@ export default async function CheckoutPage({
                   <span className='text-xl font-extrabold text-yellow-200'>{money(checkout.price)}đ</span>
                 </div>
                 <p className='mt-3 flex items-center gap-2 text-xs font-semibold text-white/48'>
-                  <Lock size={14} /> Giao dịch bảo mật bằng mã hoá SSL 256-bit.
+                  <Lock size={14} className="text-cyan-300" /> Giao dịch bảo mật bằng mã hoá SSL.
                 </p>
               </div>
-              <a className='primary-button mt-5 w-full' href='#payment'>
+              <a className='primary-button mt-5 w-full text-center block py-3.5' href='#payment'>
                 <CreditCard size={17} /> Xác Nhận Đặt Phòng
               </a>
             </section>
 
-            <section id='payment' className='section-card p-5 md:p-6'>
-              <h2 className='text-lg font-extrabold tracking-[-0.02em]'>Thanh Toán Đặt Phòng</h2>
+            <section id='payment' className='section-card p-6 md:p-8 scroll-mt-28'>
+              <h2 className='text-lg font-extrabold tracking-[-0.02em] text-white'>Thanh Toán Đặt Phòng</h2>
               <p className='mt-2 text-sm font-semibold leading-6 text-white/58'>
                 Hệ thống sẽ tự động duyệt trong 5 giây sau khi nhận được chuyển khoản.
               </p>
-              <div className='mt-4 rounded-2xl border border-yellow-200/25 bg-yellow-200/8 p-4 text-center'>
+              <div className='mt-4 rounded-2xl border-2 border-yellow-200/30 bg-yellow-200/5 p-4 text-center shadow-[3px_3px_0px_rgba(254,240,138,0.1)]'>
                 <p className='text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-yellow-200'>Thời gian còn lại</p>
                 <p className='mt-1 text-2xl font-extrabold text-white'>10:00</p>
               </div>
-              <div className='qr-card mt-4'>
-                <span>LVH</span>
+              
+              <div className='mt-5 border-2 border-white/20 bg-white p-5 rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_rgba(255,255,255,0.05)]'>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`VietinBank|101878956230|${checkout.price}|${transferCode}|LAVIE HOME`)}`}
+                  alt="Mã QR Chuyển Khoản"
+                  width={200}
+                  height={200}
+                  className="rounded-lg"
+                />
               </div>
-              <div className='mt-4 grid gap-3 text-sm'>
+
+              <div className='mt-5 grid gap-3 text-sm'>
                 <PaymentLine label='Ngân hàng thụ hưởng' value='Vietinbank' />
                 <PaymentLine label='Chủ tài khoản' value='LAVIE HOME' />
                 <PaymentLine label='Nội dung chuyển khoản' value={transferCode} />
                 <PaymentLine label='Tổng thanh toán' value={`${money(checkout.price)}đ`} strong />
               </div>
               <Link
-                className='mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full border border-white/14 bg-white/7 px-6 text-sm font-extrabold text-white transition hover:bg-white/11'
+                className='mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-xl border-2 border-white/20 bg-white/5 px-6 text-sm font-extrabold text-white shadow-[3px_3px_0px_rgba(255,255,255,0.15)] hover:shadow-[5px_5px_0px_white] hover:border-white hover:-translate-y-0.5 transition-all duration-150'
                 href='/#booking'
               >
                 Hủy & Đặt Đơn Khác
               </Link>
-              <div className='mt-5 rounded-3xl border border-white/10 bg-white/5 p-4'>
-                <h3 className='flex items-center gap-2 font-extrabold text-pink-100'>
-                  <ShieldCheck size={18} /> Hướng Dẫn Thanh Toán
+              <div className='mt-5 rounded-2xl border border-white/10 bg-white/5 p-5'>
+                <h3 className='flex items-center gap-2 font-extrabold text-pink-100 text-sm'>
+                  <ShieldCheck size={18} className="text-pink-300" /> Hướng Dẫn Thanh Toán
                 </h3>
-                <ol className='mt-3 list-decimal space-y-2 pl-5 text-sm font-semibold leading-6 text-white/62'>
+                <ol className='mt-3 list-decimal space-y-2 pl-4 text-xs font-semibold leading-5 text-white/62'>
                   <li>Mở ứng dụng ngân hàng của bạn.</li>
-                  <li>Quét mã QR bên trên hoặc nhập nội dung chuyển khoản.</li>
-                  <li>Nội dung chuyển khoản cần viết in hoa chữ cái.</li>
+                  <li>Quét mã QR bên trên để tự động điền thông tin hoặc nhập tay nội dung chuyển khoản.</li>
+                  <li>Nội dung chuyển khoản cần viết in hoa chính xác chữ cái.</li>
                   <li>Sau khi chuyển khoản thành công, hệ thống sẽ tự động xác nhận trong giây lát.</li>
                 </ol>
               </div>

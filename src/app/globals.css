@@ -144,22 +144,21 @@ input {
 }
 
 .page-panel {
-  border: 1px solid var(--line);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 28px;
   background:
-    linear-gradient(145deg, rgba(243, 90, 189, 0.13), rgba(246, 215, 111, 0.055)),
-    rgba(22, 12, 27, 0.84);
-  box-shadow:
-    0 26px 90px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+    linear-gradient(145deg, rgba(243, 90, 189, 0.08), rgba(246, 215, 111, 0.03)),
+    rgba(22, 12, 27, 0.9);
+  box-shadow: 6px 6px 0px rgba(243, 90, 189, 0.25);
   backdrop-filter: blur(20px) saturate(140%);
 }
 
 .section-card {
-  border: 1px solid var(--line);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
-  background: var(--surface);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: #1b111f;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.05);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .brand-header {
@@ -987,25 +986,24 @@ input {
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  border-radius: 999px;
+  border-radius: 18px;
   background: linear-gradient(135deg, #f35abd 0%, #ff8fd9 54%, #f6d76f 100%);
-  padding: 0.78rem 1rem;
+  padding: 0.78rem 1.25rem;
   color: #170913;
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  box-shadow: 0 12px 30px rgba(243, 90, 189, 0.28);
+  border: 2px solid #ffffff;
+  box-shadow: 4px 4px 0px #f35abd;
   transition:
-    transform 180ms ease,
-    filter 180ms ease,
-    box-shadow 180ms ease;
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .primary-button:hover:enabled {
   transform: translateY(-2px);
-  filter: brightness(1.06);
-  box-shadow: 0 18px 38px rgba(243, 90, 189, 0.38);
+  box-shadow: 6px 6px 0px #f35abd;
 }
 
 .primary-button:active:enabled,
@@ -1017,12 +1015,12 @@ input {
 .room-card-clone {
   flex: 0 0 min(86vw, 330px);
   border-radius: 24px;
-  border: 1px solid var(--line);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035)),
     rgba(27, 17, 31, 0.86);
-  padding: 0.9rem;
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.23);
+  padding: 1rem;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.05);
   transition:
     transform 220ms ease,
     border-color 220ms ease,
@@ -1031,8 +1029,8 @@ input {
 
 .room-card-clone:hover {
   transform: translateY(-6px);
-  border-color: rgba(255, 143, 217, 0.46);
-  box-shadow: 0 24px 70px rgba(243, 90, 189, 0.16);
+  border-color: #f35abd;
+  box-shadow: 6px 6px 0px #f35abd;
 }
 
 .float-button {
@@ -1070,18 +1068,18 @@ input {
 .field-input {
   height: 3.25rem;
   width: 100%;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.075);
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
   padding-inline: 3rem 1rem;
   color: white;
   font-size: 0.95rem;
   font-weight: 600;
   outline: none;
   transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease;
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .field-input::placeholder {
@@ -1089,9 +1087,9 @@ input {
 }
 
 .field-input:focus {
-  border-color: rgba(255, 143, 217, 0.72);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 4px rgba(243, 90, 189, 0.14);
+  border-color: #f35abd;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 3px 3px 0px #f35abd;
 }
 
 .qr-card {
@@ -1127,23 +1125,26 @@ input {
   place-items: center;
   gap: 0.75rem;
   border-radius: 24px;
-  border: 1px dashed rgba(255, 143, 217, 0.42);
-  background: rgba(255, 255, 255, 0.055);
+  border: 2px dashed rgba(255, 143, 217, 0.4);
+  background: rgba(255, 255, 255, 0.05);
   padding: 1.25rem;
   text-align: center;
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.84rem;
   font-weight: 750;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.03);
   transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease;
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 
 .checkout-upload:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 143, 217, 0.78);
-  background: rgba(255, 255, 255, 0.085);
+  transform: translateY(-2px);
+  border-color: #f35abd;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 4px 4px 0px #f35abd;
 }
 
 .checkout-upload input {
@@ -1292,6 +1293,41 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .guide-modal-card {
   animation: modal-scale-in 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes marquee-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+.custom-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-horizontal 20s linear infinite;
+}
+
+.custom-marquee-content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  padding-right: 3rem;
+}
+
+@keyframes kenburns {
+  0% {
+    transform: scale(1.05) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate(-1%, -0.5%);
+  }
+  100% {
+    transform: scale(1.05) translate(0, 0);
+  }
 }
 
 
