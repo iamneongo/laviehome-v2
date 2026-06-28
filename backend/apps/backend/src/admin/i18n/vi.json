@@ -743,6 +743,10 @@
       }
     }
   },
+  "productOptions": {
+    "domain": "Tùy chọn đặt phòng",
+    "subtitle": "Quản lý các loại tùy chọn phòng và giá trị đi kèm của chúng."
+  },
   "categories": {
     "domain": "Khu vực",
     "subtitle": "Sắp xếp phòng nghỉ vào các khu vực và quản lý thứ hạng cũng như phân cấp của các khu vực đó.",
