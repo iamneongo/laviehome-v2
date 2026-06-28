@@ -160,14 +160,14 @@
       "loadMore": "Tải thêm {{count}}",
       "groups": {
         "all": "Tất cả khu vực",
-        "customer": "Khách hàng",
-        "customerGroup": "Nhóm khách hàng",
-        "product": "Sản phẩm",
-        "productVariant": "Biến thể sản phẩm",
+        "customer": "Khách lưu trú",
+        "customerGroup": "Nhóm khách",
+        "product": "Phòng nghỉ",
+        "productVariant": "Tùy chọn phòng",
         "inventory": "Quản lý phòng",
         "reservation": "Đặt trước",
-        "category": "Danh mục",
-        "collection": "Bộ sưu tập",
+        "category": "Khu vực",
+        "collection": "Hạng phòng",
         "order": "Đặt phòng",
         "promotion": "Khuyến mãi",
         "campaign": "Chiến dịch",
@@ -194,11 +194,11 @@
       "then": "sau đó",
       "navigation": {
         "goToOrders": "Đặt phòng",
-        "goToProducts": "Sản phẩm",
-        "goToCollections": "Bộ sưu tập",
-        "goToCategories": "Danh mục",
-        "goToCustomers": "Khách hàng",
-        "goToCustomerGroups": "Nhóm khách hàng",
+        "goToProducts": "Phòng nghỉ",
+        "goToCollections": "Hạng phòng",
+        "goToCategories": "Khu vực",
+        "goToCustomers": "Khách lưu trú",
+        "goToCustomerGroups": "Nhóm khách",
         "goToInventory": "Quản lý phòng",
         "goToReservations": "Đặt trước",
         "goToPriceLists": "Bảng giá phòng",
@@ -396,9 +396,9 @@
     "availableIn": "Có sẵn trong <0>{{x}}</0> trên <1>{{y}}</1> kênh bán hàng"
   },
   "products": {
-    "domain": "Sản phẩm",
+    "domain": "Phòng nghỉ",
     "list": {
-      "noRecordsMessage": "Tạo sản phẩm đầu tiên của bạn để bắt đầu bán hàng."
+      "noRecordsMessage": "Tạo phòng nghỉ đầu tiên của bạn để bắt đầu."
     },
     "edit": {
       "header": "Chỉnh sửa sản phẩm",
@@ -718,8 +718,8 @@
     }
   },
   "collections": {
-    "domain": "Bộ sưu tập",
-    "subtitle": "Sắp xếp sản phẩm vào các bộ sưu tập.",
+    "domain": "Hạng phòng",
+    "subtitle": "Sắp xếp phòng nghỉ vào các hạng phòng.",
     "createCollection": "Tạo bộ sưu tập",
     "createCollectionHint": "Tạo một bộ sưu tập mới để sắp xếp sản phẩm của bạn.",
     "createSuccess": "Bộ sưu tập đã được tạo thành công.",
@@ -744,8 +744,8 @@
     }
   },
   "categories": {
-    "domain": "Danh mục",
-    "subtitle": "Sắp xếp sản phẩm vào các danh mục và quản lý thứ hạng cũng như phân cấp của các danh mục đó.",
+    "domain": "Khu vực",
+    "subtitle": "Sắp xếp phòng nghỉ vào các khu vực và quản lý thứ hạng cũng như phân cấp của các khu vực đó.",
     "create": {
       "header": "Tạo danh mục",
       "hint": "Tạo một danh mục mới để sắp xếp sản phẩm của bạn.",
@@ -892,9 +892,9 @@
     "recipient": "Người nhận"
   },
   "customers": {
-    "domain": "Khách hàng",
+    "domain": "Khách lưu trú",
     "list": {
-      "noRecordsMessage": "Khách hàng của bạn sẽ hiển thị ở đây."
+      "noRecordsMessage": "Danh sách khách lưu trú sẽ hiển thị ở đây."
     },
     "create": {
       "header": "Tạo khách hàng",
@@ -963,8 +963,8 @@
     }
   },
   "customerGroups": {
-    "domain": "Nhóm khách hàng",
-    "subtitle": "Sắp xếp khách hàng vào các nhóm. Các nhóm có thể có khuyến mãi và giá khác nhau.",
+    "domain": "Nhóm khách",
+    "subtitle": "Sắp xếp khách lưu trú vào các nhóm để áp dụng chính sách giá phù hợp.",
     "list": {
       "empty": {
         "heading": "Không có nhóm khách hàng",
