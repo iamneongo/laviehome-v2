@@ -581,22 +581,22 @@
         "hint": "Sản phẩm này sẽ chỉ có sẵn trên kênh bán hàng mặc định nếu không thay đổi."
       },
       "countryOrigin": {
-        "label": "Xuất xứ"
+        "label": "Tiện ích chính"
       },
       "material": {
         "label": "Chất liệu"
       },
       "width": {
-        "label": "Chiều rộng"
+        "label": "Số giường"
       },
       "length": {
-        "label": "Chiều dài"
+        "label": "Loại giường"
       },
       "height": {
-        "label": "Chiều cao"
+        "label": "Diện tích (m²)"
       },
       "weight": {
-        "label": "Trọng lượng"
+        "label": "Sức chứa tối đa"
       },
       "options": {
         "label": "Tùy chọn sản phẩm",
@@ -612,10 +612,10 @@
         "hint": "Các biến thể không được chọn sẽ không được tạo. Thứ hạng này sẽ ảnh hưởng đến cách sắp xếp biến thể trên giao diện người dùng."
       },
       "mid_code": {
-        "label": "Mã trung gian"
+        "label": "Hướng phòng (View)"
       },
       "hs_code": {
-        "label": "Mã HS"
+        "label": "Vị trí tầng"
       }
     },
     "variant": {
@@ -2996,17 +2996,17 @@
     "expiryDate": "Ngày hết hạn",
     "price": "Giá",
     "priceTemplate": "Giá {{regionOrCurrency}}",
-    "height": "Chiều cao",
-    "width": "Chiều rộng",
-    "length": "Chiều dài",
-    "weight": "Trọng lượng",
-    "midCode": "Mã MID",
-    "hsCode": "Mã HS",
+    "height": "Diện tích (m²)",
+    "width": "Số giường",
+    "length": "Loại giường",
+    "weight": "Sức chứa tối đa (khách)",
+    "midCode": "Hướng phòng (View)",
+    "hsCode": "Vị trí tầng",
     "ean": "EAN",
     "upc": "UPC",
     "inventoryQuantity": "Số lượng kho",
     "barcode": "Mã vạch",
-    "countryOfOrigin": "Xuất xứ",
+    "countryOfOrigin": "Tiện ích chính",
     "material": "Chất liệu",
     "thumbnail": "Ảnh thu nhỏ",
     "sku": "SKU",
