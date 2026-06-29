@@ -1,6 +1,9 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+if (!process.env.JWT_SECRET) {
+  loadEnv('development', process.cwd())
+}
 
 module.exports = defineConfig({
   projectConfig: {
