@@ -241,27 +241,51 @@ const mockBookings = [
   }
 ];
 
+function getMockRows<T extends Record<string, unknown>>(text: string, params: unknown[] = []) {
+  const normalizedText = text.toLowerCase().trim();
+
+  if (normalizedText.includes('from branches')) {
+    return mockBranches as unknown as T[];
+  }
+
+  if (normalizedText.includes('from rooms')) {
+    let rooms = [...mockRooms];
+
+    if (normalizedText.includes('where is_classic = 0')) {
+      rooms = rooms.filter((room) => room.is_classic === 0);
+    }
+
+    if (normalizedText.includes('where id = $1')) {
+      const roomId = Number(params[0]);
+      rooms = rooms.filter((room) => room.id === roomId);
+    }
+
+    return rooms as unknown as T[];
+  }
+
+  if (normalizedText.includes('from bookings')) {
+    const limit = Number(params[0] ?? 12);
+    return mockBookings.slice(0, limit) as unknown as T[];
+  }
+
+  return [] as T[];
+}
+
 export async function query<T extends Record<string, unknown> = Record<string, unknown>>(
   text: string,
   params: unknown[] = []
 ): Promise<T[]> {
   if (!pool) {
-    const normalizedText = text.toLowerCase().trim();
-    if (normalizedText.includes('from branches')) {
-      return mockBranches as unknown as T[];
-    }
-    if (normalizedText.includes('from rooms')) {
-      return mockRooms as unknown as T[];
-    }
-    if (normalizedText.includes('from bookings')) {
-      const limit = Number(params[0] ?? 12);
-      return mockBookings.slice(0, limit) as unknown as T[];
-    }
-    return [] as T[];
+    return getMockRows<T>(text, params);
   }
 
-  const result = await (pool as Pool).query<T>(text, params);
-  return result.rows;
+  try {
+    const result = await (pool as Pool).query<T>(text, params);
+    return result.rows;
+  } catch (error) {
+    console.warn('Database query failed, falling back to mock data:', error);
+    return getMockRows<T>(text, params);
+  }
 }
 
 export async function queryOne<T extends Record<string, unknown> = Record<string, unknown>>(
