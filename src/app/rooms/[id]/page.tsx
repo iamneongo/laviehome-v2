@@ -89,7 +89,7 @@ export default async function RoomDetailPage({ params }: PageProps) {
               {/* Grid of smaller images */}
               {allImages.length > 1 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {allImages.slice(1, 7).map((imgUrl, index) => (
+                  {allImages.slice(1, 7).map((imgUrl: string, index) => (
                     <div 
                       key={index}
                       className="border-2 border-white/20 bg-slate-900 rounded-2xl overflow-hidden shadow-[4px_4px_0px_rgba(255,255,255,0.05)] hover:border-pink-300 hover:shadow-[4px_4px_0px_rgba(243,90,189,0.3)] transition-all aspect-[4/3] relative cursor-pointer group"

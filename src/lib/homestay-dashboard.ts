@@ -539,7 +539,7 @@ export function moneyRange(room: RoomSummary['room']) {
   return `${money(room.price_from)}đ - ${money(room.price_to)}đ`;
 }
 
-export async function getPublicRoomById(id: number) {
+export async function getPublicRoomById(id: number): Promise<RoomRow | null> {
   try {
     const res = await fetch(`${MEDUSA_API_URL}/store/lavie-data`, {
       headers: {
@@ -549,7 +549,7 @@ export async function getPublicRoomById(id: number) {
     });
     const data = await res.json();
     const rooms = data.rooms || [];
-    const room = rooms.find((r: any) => r.id === id);
+    const room = rooms.find((r: RoomRow) => r.id === id);
     return room ?? null;
   } catch (error) {
     console.error('Failed to fetch room by id from Medusa, falling back to local query:', error);
