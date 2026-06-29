@@ -5,10 +5,16 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    databaseDriverOptions: {
+    databaseDriverOptions: (process.env.DATABASE_URL?.includes('neon.tech') || process.env.DATABASE_URL?.includes('sslmode=require')) ? {
       connection: {
         ssl: { rejectUnauthorized: false }
       },
+      pool: {
+        min: 0,
+        max: 2,
+        idleTimeoutMillis: 500
+      }
+    } : {
       pool: {
         min: 0,
         max: 2,
