@@ -30,6 +30,11 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS!,
       jwtSecret: process.env.JWT_SECRET,
       cookieSecret: process.env.COOKIE_SECRET,
+    },
+    sessionOptions: {
+      // Domain hiện chạy HTTP (chưa có TLS), nên cookie phải bỏ cờ Secure
+      // để trình duyệt chấp nhận lưu sau khi login. Bật lại true khi có HTTPS.
+      secure: process.env.COOKIE_SECURE === 'true',
     }
   }
 })
