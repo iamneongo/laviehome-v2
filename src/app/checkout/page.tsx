@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import type { ElementType } from 'react';
 
 import { SiteHeader } from '@/components/site-header';
 import { CheckoutPaymentBox } from '@/components/checkout-payment-box';
+import { CheckoutForm } from './checkout-form';
 import { getPublicBranches } from '@/lib/homestay-dashboard';
 import { compactPhone, money } from '@/lib/format';
 import {
@@ -12,12 +12,8 @@ import {
   CreditCard,
   FileText,
   Home,
-  IdCard,
   Lock,
   MapPin,
-  ShieldCheck,
-  Upload,
-  UserRound
 } from 'lucide-react';
 
 type CheckoutSearchParams = Record<string, string | string[] | undefined>;
@@ -38,7 +34,6 @@ function firstValue(value: string | string[] | undefined) {
 
 function decodePayload(data: string): CheckoutPayload {
   if (!data) return {};
-
   try {
     return JSON.parse(Buffer.from(data, 'base64').toString('utf8')) as CheckoutPayload;
   } catch {
@@ -62,12 +57,35 @@ async function resolveCheckout(params: CheckoutSearchParams) {
     timeRange: decoded.time_range ?? firstValue(params.time_range) ?? 'N/A',
     price: Number.isFinite(price) ? price : 0,
     hotline: branch?.hotline ?? '0909.123.456',
-    map: branch?.google_maps_link ?? '/contacts'
+    map: branch?.google_maps_link ?? '/contacts',
   };
 }
 
+async function upsertBookingRecord(id: string, checkout: Awaited<ReturnType<typeof resolveCheckout>>) {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    await fetch(`${baseUrl}/api/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        room_name: checkout.roomName,
+        branch_id: checkout.branchId,
+        branch_name: checkout.branchName,
+        date_label: checkout.date,
+        time_range: checkout.timeRange,
+        timeslot_ids: checkout.timeslotIds,
+        amount: checkout.price,
+      }),
+      cache: 'no-store',
+    });
+  } catch {
+    // non-blocking — booking will be created on form submit instead
+  }
+}
+
 export default async function CheckoutPage({
-  searchParams
+  searchParams,
 }: {
   searchParams: Promise<CheckoutSearchParams>;
 }) {
@@ -76,6 +94,9 @@ export default async function CheckoutPage({
   const transferCode = `LVH${String(checkout.branchId || '00').padStart(2, '0')}${String(checkout.timeslotIds)
     .replace(/\D/g, '')
     .slice(-6) || '000000'}`;
+
+  // Eagerly create booking so webhook can confirm it when payment arrives
+  await upsertBookingRecord(transferCode, checkout);
 
   return (
     <main className='site-shell min-h-dvh text-white'>
@@ -91,86 +112,7 @@ export default async function CheckoutPage({
               </p>
             </section>
 
-            <section className='section-card p-6 md:p-8'>
-              <h2 className='flex items-center gap-2 text-xl font-extrabold tracking-[-0.025em]'>
-                <UserRound className='text-pink-200' size={21} /> Thông Tin Người Đặt
-              </h2>
-              <form className='mt-6 grid gap-5'>
-                <label className='grid gap-2 text-sm font-bold text-white/72'>
-                  Họ và Tên (*)
-                  <input className='field-input !pl-5' placeholder='Nhập họ và tên' required />
-                </label>
-                <label className='grid gap-2 text-sm font-bold text-white/72'>
-                  Số Điện Thoại (*)
-                  <input className='field-input !pl-5' inputMode='tel' placeholder='Số điện thoại nhận mã mở khóa' required />
-                </label>
-
-                <div className='grid gap-3'>
-                  <p className='text-sm font-bold text-white/72'>Số Lượng Người</p>
-                  <div className='grid gap-3 md:grid-cols-3'>
-                    {[
-                      ['2', 'Đi 2 người', 'Mặc định'],
-                      ['3', 'Đi 3 người', 'Phụ thu 50.000đ'],
-                      ['4', 'Đi 4 người', 'Phụ thu 100.000đ']
-                    ].map(([value, title, note]) => (
-                      <label
-                        key={value}
-                        className='cursor-pointer rounded-2xl border-2 border-white/10 bg-white/5 p-4 transition duration-150 block has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/10 has-[:checked]:shadow-[4px_4px_0px_#f35abd] has-[:checked]:-translate-y-0.5 hover:border-white hover:bg-white/10'
-                      >
-                        <input className='sr-only' type='radio' name='guest_count' defaultChecked={value === '2'} />
-                        <span className='block font-extrabold text-white'>{title}</span>
-                        <span className='mt-1 block text-xs font-bold text-white/52'>{note}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <p className='text-xs font-semibold text-white/48'>Trẻ em trên 10 tuổi tính như 1 slot ngồi.</p>
-                </div>
-
-                <label className='grid gap-2 text-sm font-bold text-white/72'>
-                  Ghi Chú/Yêu Cầu Riêng (Tuỳ Chọn)
-                  <textarea
-                    className='min-h-28 rounded-2xl border-2 border-white/15 bg-white/5 px-5 py-4 text-sm font-semibold text-white outline-none transition placeholder:text-white/35 focus:border-pink-500 focus:bg-white/10 focus:shadow-[3px_3px_0px_#f35abd]'
-                    placeholder='Ví dụ: đến muộn 10 phút, cần hỗ trợ thêm...'
-                  />
-                </label>
-
-                <label className='flex items-start gap-3 rounded-2xl border-2 border-white/10 bg-white/5 p-4 text-sm font-bold text-white/72 hover:border-white/20 transition-all duration-150 cursor-pointer has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/5'>
-                  <input className='mt-1 accent-pink-500' type='checkbox' />
-                  <span>Đến bằng xe hơi (Để nhân viên hỗ trợ chỗ đỗ xe)</span>
-                </label>
-                <label className='flex items-start gap-3 rounded-2xl border-2 border-white/10 bg-white/5 p-4 text-sm font-bold text-white/72 hover:border-white/20 transition-all duration-150 cursor-pointer has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/5'>
-                  <input className='mt-1 accent-pink-500' type='checkbox' />
-                  <span>Gói trang trí Sinh nhật, Ngày Lễ,... (tuỳ chọn, sẽ có nhân viên liên hệ tư vấn gói)</span>
-                </label>
-              </form>
-            </section>
-
-            <section className='section-card p-6 md:p-8'>
-              <h2 className='flex items-center gap-2 text-xl font-extrabold tracking-[-0.025em]'>
-                <IdCard className='text-pink-200' size={21} /> Xác Thực Căn Cước
-              </h2>
-              <p className='mt-3 text-sm font-semibold leading-6 text-white/58'>
-                Dữ liệu thẻ CCCD của bạn sẽ được mã hoá và tự động xoá sau khi check-out.
-              </p>
-              <div className='mt-5 grid gap-4 md:grid-cols-2'>
-                <label className='checkout-upload'>
-                  <Upload size={24} className="text-pink-300" />
-                  <span>Mặt Trước CCCD / Bằng Lái</span>
-                  <input type='file' accept='image/*' />
-                </label>
-                <label className='checkout-upload'>
-                  <Upload size={24} className="text-pink-300" />
-                  <span>Mặt Sau CCCD / Bằng Lái</span>
-                  <input type='file' accept='image/*' />
-                </label>
-              </div>
-              <label className='mt-5 flex items-start gap-3 text-sm font-semibold leading-6 text-white/62 cursor-pointer hover:text-white transition-colors'>
-                <input className='mt-1 accent-pink-500' type='checkbox' required />
-                <span>
-                  Tôi đồng ý với <a className='text-yellow-200 underline-offset-4 hover:underline font-bold'>Điều khoản và điều kiện</a> và đồng ý bảo lãnh cho bạn cùng phòng.
-                </span>
-              </label>
-            </section>
+            <CheckoutForm bookingId={transferCode} price={checkout.price} />
           </div>
 
           <aside className='grid h-fit gap-6 lg:sticky lg:top-28'>
@@ -185,7 +127,6 @@ export default async function CheckoutPage({
                 <CheckoutLine icon={Clock3} label='Khung giờ' value={checkout.timeRange} />
               </div>
               <div className='mt-5 border-t border-white/10 pt-5 space-y-4'>
-                {/* Discount code field */}
                 <div className='grid gap-2'>
                   <label className='text-xs font-extrabold uppercase tracking-wider text-white/50'>
                     Mã Giảm Giá (Nếu Có)
@@ -215,15 +156,15 @@ export default async function CheckoutPage({
                 </p>
               </div>
               <a className='primary-button mt-5 w-full text-center block py-3.5' href='#payment'>
-                <CreditCard size={17} /> Xác Nhận Đặt Phòng
+                <CreditCard size={17} /> Xem Thông Tin Thanh Toán
               </a>
             </section>
 
-            <CheckoutPaymentBox 
-              price={checkout.price} 
-              transferCode={transferCode} 
-              hotline={checkout.hotline} 
-              mapLink={checkout.map} 
+            <CheckoutPaymentBox
+              price={checkout.price}
+              transferCode={transferCode}
+              hotline={checkout.hotline}
+              mapLink={checkout.map}
             />
           </aside>
         </section>
@@ -254,15 +195,6 @@ function CheckoutLine({ icon: Icon, label, value }: { icon: ElementType; label: 
         <Icon size={15} className='text-pink-200' /> {label}
       </p>
       <p className='mt-1 text-sm font-extrabold text-white/88'>{value}</p>
-    </div>
-  );
-}
-
-function PaymentLine({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <div className='rounded-2xl bg-white/5 px-4 py-3'>
-      <p className='text-[0.68rem] font-extrabold uppercase tracking-[0.1em] text-white/38'>{label}</p>
-      <p className={`mt-1 font-extrabold ${strong ? 'text-xl text-yellow-200' : 'text-sm text-white'}`}>{value}</p>
     </div>
   );
 }

@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
 
+let pool: Pool | null = null;
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
+  return pool;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const bookingId = searchParams.get("booking_id");
@@ -9,22 +20,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ paid: false, error: "Missing booking_id" }, { status: 400 });
   }
 
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
+  if (!process.env.DATABASE_URL) {
     return NextResponse.json({ paid: false, error: "Database not configured" }, { status: 500 });
   }
 
   try {
-    const pool = new Pool({
-      connectionString,
-      ssl: { rejectUnauthorized: false }
-    });
-
-    const res = await pool.query(
+    const db = getPool();
+    const res = await db.query(
       "SELECT status FROM bookings WHERE UPPER(id) = $1",
       [bookingId.toUpperCase()]
     );
-    await pool.end();
 
     if (res.rows.length > 0 && res.rows[0].status === "Đã xác nhận") {
       return NextResponse.json({ paid: true });
