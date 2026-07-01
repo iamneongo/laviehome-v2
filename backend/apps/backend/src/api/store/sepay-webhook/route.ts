@@ -2,6 +2,8 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { Pool } from "pg";
 
+export const AUTHENTICATE = false;
+
 let pool: Pool | null = null;
 function getPool() {
   if (!pool) {
