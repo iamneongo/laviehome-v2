@@ -189,31 +189,25 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
 
   useGSAP(() => {
     const tl = gsap.timeline();
-    tl.from(".lavie-cyber-title", {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      ease: "power3.out",
-    })
-    .from(".lavie-cyber-p", {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      ease: "power3.out",
-    }, "-=0.5")
-    .from(".lavie-cyber-actions a", {
-      opacity: 0,
-      y: 15,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: "power3.out",
-    }, "-=0.4")
-    .from(".lavie-cyber-mockup", {
-      opacity: 0,
-      scale: 0.95,
-      duration: 0.7,
-      ease: "back.out(1.7)",
-    }, "-=0.6");
+    tl.fromTo(".lavie-cyber-title",
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+    )
+    .fromTo(".lavie-cyber-p",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+      "-=0.5"
+    )
+    .fromTo(".lavie-cyber-actions a",
+      { opacity: 0, y: 15 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" },
+      "-=0.4"
+    )
+    .fromTo(".lavie-cyber-mockup",
+      { opacity: 0, scale: 0.95 },
+      { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.7)" },
+      "-=0.6"
+    );
   }, { scope: containerRef });
 
   useGSAP(() => {
@@ -616,17 +610,17 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
                     </tr>
                     {/* Row 2: Thứ / Ngày / Slots */}
                     <tr className="border-b border-white/10 bg-white/3">
-                      <th className="sticky left-0 z-30 w-[3.1rem] min-w-[3.1rem] bg-[#1f1428] p-2.5 border-r border-white/10 text-[11px] font-bold text-white/60 text-center">Thứ</th>
-                      <th className="sticky left-[3.1rem] z-30 w-[3.4rem] min-w-[3.4rem] bg-[#1f1428] p-2.5 border-r border-white/10 text-[11px] font-bold text-white/60 text-center">Ngày</th>
+                      <th className="sticky left-0 z-30 w-[3.1rem] min-w-[3.1rem] bg-[#1f1428] py-1.5 px-1 border-r border-white/10 text-[11px] font-bold text-white/60 text-center">Thứ</th>
+                      <th className="sticky left-[3.1rem] z-30 w-[3.4rem] min-w-[3.4rem] bg-[#1f1428] py-1.5 px-1 border-r border-white/10 text-[11px] font-bold text-white/60 text-center">Ngày</th>
                       {calendarRooms.map((room) =>
                         getRoomSlots(room.card_name).map((slot, sIdx) => (
                           <th
                             key={`${room.id}-slot-head-${sIdx}`}
-                            className="p-2.5 border-r border-white/10 text-[10px] font-medium text-white/70 text-center min-w-[95px]"
+                            className="py-1.5 px-1 border-r border-white/10 text-[10px] font-medium text-white/70 text-center min-w-[82px]"
                           >
                             <div className="flex flex-col items-center justify-center gap-0.5">
-                              <span className="font-semibold text-white/95">{slot.label}</span>
-                              <span className="flex items-center gap-0.5 text-[9px] font-bold text-white/40">
+                              <span className="font-semibold text-white/95 tracking-tighter text-[9.5px]">{slot.label}</span>
+                              <span className="flex items-center gap-0.5 text-[8.5px] font-bold text-white/40 tracking-tighter">
                                 {slot.isOvernight && <span className="text-pink-300">🌙</span>}
                                 {slot.duration}
                               </span>
@@ -639,12 +633,12 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
                   <tbody>
                     {dates.map((date, dayIndex) => (
                       <tr key={date.iso} className="border-b border-white/5 hover:bg-white/3 transition-colors duration-150">
-                        <td className="sticky left-0 z-10 w-[3.1rem] min-w-[3.1rem] bg-[#1b1023] p-3 text-center border-r border-white/10 font-bold text-xs text-white/80">
+                        <td className="sticky left-0 z-10 w-[3.1rem] min-w-[3.1rem] bg-[#1b1023] py-1.5 px-1 text-center border-r border-white/10 font-bold text-xs text-white/80">
                           <span className={date.label === "Hôm nay" ? "text-pink-400 font-extrabold" : ""}>
                             {date.label}
                           </span>
                         </td>
-                        <td className="sticky left-[3.1rem] z-10 w-[3.4rem] min-w-[3.4rem] bg-[#1b1023] p-3 text-center border-r border-white/10 font-bold text-xs text-white/80">
+                        <td className="sticky left-[3.1rem] z-10 w-[3.4rem] min-w-[3.4rem] bg-[#1b1023] py-1.5 px-1 text-center border-r border-white/10 font-bold text-xs text-white/80">
                           <span className={date.label === "Hôm nay" ? "text-pink-400 font-extrabold" : ""}>
                             {date.dateLabel}
                           </span>
@@ -660,7 +654,7 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
                             const price = slot.isOvernight ? room.full_day_price : room.price_from;
 
                             return (
-                              <td key={id} className="p-2.5 text-center border-r border-white/5 align-middle min-w-[95px]">
+                              <td key={id} className="py-1 px-1 text-center border-r border-white/5 align-middle min-w-[82px]">
                                 <button
                                   disabled={booked}
                                   onClick={() =>
@@ -690,9 +684,13 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
                                 >
                                   {booked ? (
                                     <span className="text-[10px] font-bold text-white/50">-</span>
+                                  ) : selected ? (
+                                    <span className="text-[9.5px] font-black text-black">
+                                      {money(price)}đ
+                                    </span>
                                   ) : (
                                     <>
-                                      {hasBlindBag && !selected && (
+                                      {hasBlindBag && (
                                         <div className="absolute inset-0 flex items-center justify-center animate-float">
                                           <BlindBagIcon size={18} />
                                         </div>
