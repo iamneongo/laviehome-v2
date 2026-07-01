@@ -772,7 +772,7 @@ input {
 .booking-table {
   width: max(100%, 1120px);
   min-width: 1120px;
-  table-layout: fixed;
+  table-layout: auto;
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;

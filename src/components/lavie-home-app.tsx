@@ -597,7 +597,7 @@ export function LavieHomeApp({ branches, rooms }: { branches: Branch[]; rooms: R
                 </div>
               ) : (
               <div ref={bookingScrollRef} className="booking-scroll hide-scrollbar overflow-x-auto overscroll-x-contain">
-                <table className="booking-table border-collapse min-w-max text-center">
+                <table className="booking-table min-w-max text-center">
                   <thead>
                     {/* Row 1: Tên phòng */}
                     <tr className="border-b border-white/10 bg-white/5">
